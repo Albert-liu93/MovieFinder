@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button getMovieDetailBtn;
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(mContext, GetMovieDetails.class));
             }
         });
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
+        ImageLoader.getInstance().init(config);
 
 
     }

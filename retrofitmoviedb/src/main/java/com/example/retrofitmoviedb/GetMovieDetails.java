@@ -2,6 +2,7 @@ package com.example.retrofitmoviedb;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.retrofitmoviedb.API.MovieClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import retrofit2.Call;
@@ -60,9 +65,14 @@ public class GetMovieDetails extends AppCompatActivity {
 
     private void getMovieDetail() {
         Log.e(TAG, "getmovie detail");
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl("https://api.themoviedb.org/3/movie/")
-                .addConverterFactory(ScalarsConverterFactory.create());
+                .addConverterFactory(GsonConverterFactory.create(gson));
 
         Retrofit retrofit = builder.build();
         MovieClient client = retrofit.create(MovieClient.class);
@@ -74,17 +84,25 @@ public class GetMovieDetails extends AppCompatActivity {
             return;
         }
 
-        Call<String> call = client.getMovieDetailAsString(MOVIE_ID, API_KEY);
-        call.enqueue(new Callback<String>() {
+        Call<JsonObject> call = client.getMovieDetail(MOVIE_ID, API_KEY);
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                Log.e(TAG, "response code" + response.code());
-                movieResult.setText(null);
-                movieResult.setText(response.body());
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    Log.e(TAG, "response code" + response.code());
+                    //go to new activity, pass jsonobject as string
+                    Log.e(TAG, "jsonobject = " + response.body());
+                    Intent intent = new Intent(mContext, MovieDetails.class);
+                    intent.putExtra("JSONObject", response.body().toString());
+                    startActivity(intent);
+                } else {
+                    movieResult.setText("Movie Could Not Be Found, Try Another ID");
+                }
+
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(mContext, "Failure!", Toast.LENGTH_LONG).show();
 
             }

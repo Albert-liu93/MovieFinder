@@ -1,5 +1,10 @@
 package com.example.retrofitmoviedb.API;
 
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -17,6 +22,10 @@ public interface MovieClient {
             @Path("id") int id,
             @Query("api_key") String api_key);
 
+    @GET("{id}")
+    Call<JsonObject> getMovieDetail(
+            @Path("id") int id,
+            @Query("api_key") String api_key);
 
 
 
