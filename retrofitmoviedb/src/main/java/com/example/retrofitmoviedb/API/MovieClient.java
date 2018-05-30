@@ -27,6 +27,13 @@ public interface MovieClient {
             @Path("id") int id,
             @Query("api_key") String api_key);
 
+    @GET("movie")
+    Call<JsonObject> getSearchQuery(
+            @Query("query") String text,
+            @Query("api_key") String api_key);
 
+    @GET("popular")
+    Call<JsonObject> getPopularMovies(
+            @Query("api_key") String api_key);
 
 }

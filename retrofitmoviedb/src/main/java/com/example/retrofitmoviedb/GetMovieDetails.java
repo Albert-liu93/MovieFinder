@@ -1,6 +1,5 @@
 package com.example.retrofitmoviedb;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,33 +7,30 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.retrofitmoviedb.API.MovieClient;
+import com.example.retrofitmoviedb.Constants.Constants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by Albert on 5/1/2018.
  */
 
-public class GetMovieDetails extends AppCompatActivity {
+public class GetMovieDetails extends AppCompatActivity  implements View.OnClickListener{
 
-    private String API_KEY = "4ee4d1e00b07b0aa548326a083c25eb3";
     private Button getMovieDetailBtn;
     private TextView movieResult;
     private EditText movieId;
@@ -48,7 +44,6 @@ public class GetMovieDetails extends AppCompatActivity {
         mContext = this;
         movieResult = findViewById(R.id.movieResult_TV);
         movieId = findViewById(R.id.movieId_et);
-
         getMovieDetailBtn = findViewById(R.id.getMovieDetail_btn);
         getMovieDetailBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,11 +52,26 @@ public class GetMovieDetails extends AppCompatActivity {
                     Toast.makeText(mContext , "Must enter a movie Id to retrieve data!", Toast.LENGTH_LONG).show();
                 } else {
                     getMovieDetail();
+                    InputMethodManager inputManager = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(GetMovieDetails.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
         });
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.return_btn:
+                finish();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        movieId.setText(null);
+    }
 
     private void getMovieDetail() {
         Log.e(TAG, "getmovie detail");
@@ -84,7 +94,7 @@ public class GetMovieDetails extends AppCompatActivity {
             return;
         }
 
-        Call<JsonObject> call = client.getMovieDetail(MOVIE_ID, API_KEY);
+        Call<JsonObject> call = client.getMovieDetail(MOVIE_ID, Constants.API_KEY);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

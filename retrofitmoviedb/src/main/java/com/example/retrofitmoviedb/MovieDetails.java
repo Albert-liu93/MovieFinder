@@ -9,18 +9,17 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
-import com.google.gson.Gson;
+import com.example.retrofitmoviedb.Constants.Constants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Albert on 5/11/2018.
@@ -30,7 +29,7 @@ public class MovieDetails extends AppCompatActivity {
 
     JsonObject movieJSON = new JsonObject();
     String TAG = "MovieDetails";
-    TextView title, overview, genres, releaseDate;
+    TextView title, overview, genres, releaseDate, rating;
     ImageView poster;
 
     @Override
@@ -39,12 +38,13 @@ public class MovieDetails extends AppCompatActivity {
         setContentView(R.layout.activity_movie_details);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        actionBar.hide();
         title = findViewById(R.id.movie_original_title_TV);
         overview = findViewById(R.id.movie_overview_TV);
         genres = findViewById(R.id.movie_genres_TV);
         releaseDate = findViewById(R.id.movie_release_date_TV);
         poster = findViewById(R.id.movie_IV);
+        rating = findViewById(R.id.rating_TV);
 
         Intent intent = getIntent();
         if (intent.hasExtra("JSONObject")) {
@@ -52,24 +52,17 @@ public class MovieDetails extends AppCompatActivity {
             JsonParser jsonParser = new JsonParser();
             movieJSON = (JsonObject) jsonParser.parse(JSONString);
         }
-        Log.e(TAG, "json " + movieJSON);
-        title.append(movieJSON.get("original_title").getAsString());
-        overview.append(movieJSON.get("overview").getAsString());
-        JsonArray jsonArray = movieJSON.getAsJsonArray("genres");
-        Log.e(TAG, "jsonArray" + jsonArray);
-        int size = jsonArray.size();
-        Log.e(TAG, "jsonArray" + size);
-        for (JsonElement element : jsonArray) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            genres.append(jsonObject.get("name").getAsString());
-            genres.append(",");
-        }
-        releaseDate.append(movieJSON.get("release_date").getAsString());
-
+        loadText(movieJSON);
         ImageLoader imageLoader = ImageLoader.getInstance();
         String imageURL = Constants.movieDB_Image_URL + movieJSON.get("poster_path").getAsString();
         imageLoader.displayImage(imageURL, poster);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -78,5 +71,38 @@ public class MovieDetails extends AppCompatActivity {
             finish();
         }
         return true;
+    }
+
+    private void loadText(JsonObject movieJSON) {
+        Log.e(TAG, "json " + movieJSON);
+        title.append(movieJSON.get("original_title").getAsString());
+        overview.append(movieJSON.get("overview").getAsString());
+        JsonArray jsonArray = movieJSON.getAsJsonArray("genres");
+        Log.e(TAG, "jsonArray" + jsonArray);
+        int size = jsonArray.size();
+        Log.e(TAG, "jsonArray" + size);
+        for (JsonElement element : jsonArray) {
+            JsonObject jsonObject2 = element.getAsJsonObject();
+            genres.append(jsonObject2.get("name").getAsString());
+            genres.append(",");
+        }
+
+        String releaseDateString = movieJSON.get("release_date").getAsString();
+
+        SimpleDateFormat inputDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat outputDate = new SimpleDateFormat("MMMM-dd-yyyy");
+        Date convertedDate = new Date();
+        try {
+            convertedDate = inputDate.parse(releaseDateString);
+        } catch (ParseException e) {
+            Log.e(TAG, "Error" + e);
+        }
+        String releaseDateFormatted = outputDate.format(convertedDate);
+        releaseDate.append(releaseDateFormatted);
+
+
+        rating.append(movieJSON.get("vote_average").getAsString());
+
+
     }
 }
