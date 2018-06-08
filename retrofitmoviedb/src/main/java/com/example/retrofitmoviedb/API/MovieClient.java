@@ -36,4 +36,8 @@ public interface MovieClient {
     Call<JsonObject> getPopularMovies(
             @Query("api_key") String api_key);
 
+    @GET("upcoming")
+    Call<JsonObject> getUpcomingmovies(
+            @Query("api_key") String api_key);
+
 }

@@ -36,7 +36,7 @@ public class Utils {
                     Log.e(TAG, "response code" + response.code());
                     //go to new activity, pass jsonobject as string
                     Log.e(TAG, "jsonobject = " + response.body());
-                    Intent intent = new Intent(mContext, MovieDetails.class);
+                    Intent intent = new Intent(mContext, MovieDetailsActivity.class);
                     intent.putExtra("JSONObject", response.body().toString());
                     mContext.startActivity(intent);
                 } else {

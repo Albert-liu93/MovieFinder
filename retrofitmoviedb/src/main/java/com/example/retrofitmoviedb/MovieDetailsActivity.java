@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.retrofitmoviedb.Constants.Constants;
@@ -25,12 +26,13 @@ import java.util.Date;
  * Created by Albert on 5/11/2018.
  */
 
-public class MovieDetails extends AppCompatActivity {
+public class MovieDetailsActivity extends AppCompatActivity {
 
     JsonObject movieJSON = new JsonObject();
-    String TAG = "MovieDetails";
+    String TAG = "MovieDetailsActivity";
     TextView title, overview, genres, releaseDate, rating;
-    ImageView poster;
+    ImageView poster, backdrop;
+    RatingBar ratingBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +46,9 @@ public class MovieDetails extends AppCompatActivity {
         genres = findViewById(R.id.movie_genres_TV);
         releaseDate = findViewById(R.id.movie_release_date_TV);
         poster = findViewById(R.id.movie_IV);
+        backdrop = findViewById(R.id.movie_background_poster_IV);
         rating = findViewById(R.id.rating_TV);
+        ratingBar = findViewById(R.id.ratingBar);
 
         Intent intent = getIntent();
         if (intent.hasExtra("JSONObject")) {
@@ -55,7 +59,9 @@ public class MovieDetails extends AppCompatActivity {
         loadText(movieJSON);
         ImageLoader imageLoader = ImageLoader.getInstance();
         String imageURL = Constants.movieDB_Image_URL + movieJSON.get("poster_path").getAsString();
+        String posterURL = Constants.movieDB_Image_URL + movieJSON.get("backdrop_path").getAsString();
         imageLoader.displayImage(imageURL, poster);
+        imageLoader.displayImage(posterURL, backdrop);
 
     }
 
@@ -84,7 +90,7 @@ public class MovieDetails extends AppCompatActivity {
         for (JsonElement element : jsonArray) {
             JsonObject jsonObject2 = element.getAsJsonObject();
             genres.append(jsonObject2.get("name").getAsString());
-            genres.append(",");
+            genres.append(" ");
         }
 
         String releaseDateString = movieJSON.get("release_date").getAsString();
@@ -101,8 +107,10 @@ public class MovieDetails extends AppCompatActivity {
         releaseDate.append(releaseDateFormatted);
 
 
-        rating.append(movieJSON.get("vote_average").getAsString());
+//        rating.append(movieJSON.get("vote_average").getAsString());
+        ratingBar.setRating(Float.parseFloat("5"));
 
+//        ratingBar.setRating(Float.parseFloat(movieJSON.get("vote_average").getAsString()));
 
     }
 }

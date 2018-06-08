@@ -1,6 +1,7 @@
 package com.example.retrofitmoviedb;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -49,12 +50,12 @@ import static com.example.retrofitmoviedb.Utils.getMovieDetails;
  * Created by Albert on 5/15/2018.
  */
 
-public class SearchMovie extends AppCompatActivity {
+public class SearchMovieActivity extends AppCompatActivity {
 
 
         ListView searchListView;
         Context mContext;
-        String TAG = "SearchMovie";
+        String TAG = "SearchMovieActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +66,18 @@ public class SearchMovie extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("query")) {
+            String query = intent.getStringExtra("query");
+            searchMovie(query);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

@@ -3,20 +3,40 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="9"
+    android:background="#000000"
+
     >
 
-    <ImageView
-        android:layout_width="match_parent"
+
+    <FrameLayout
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:id="@+id/movie_IV"
-        android:layout_weight="3"
-        />
+        android:layout_weight="3">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:id="@+id/movie_background_poster_IV"
+            android:scaleType="fitXY"
+            />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/movie_IV"
+            android:layout_gravity="bottom"
+            />
+
+
+    </FrameLayout>
+
+
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/movie_original_title_TV"
         android:textSize="30dp"
+        android:textColor="#FFFFFF"
         android:gravity="center_vertical"
         android:layout_weight="1"
         />
@@ -26,6 +46,7 @@
         android:id="@+id/movie_overview_TV"
         android:gravity="center_vertical"
         android:text="Overview: "
+        android:textColor="#FFFFFF"
         android:layout_weight="1"
         />
     <TextView
@@ -34,6 +55,7 @@
         android:id="@+id/movie_genres_TV"
         android:gravity="center_vertical"
         android:text="Genres: "
+        android:textColor="#FFFFFF"
         android:layout_weight="1"
         />
     <TextView
@@ -41,17 +63,37 @@
         android:layout_height="0dp"
         android:id="@+id/movie_release_date_TV"
         android:text="Release Date: "
+        android:textColor="#FFFFFF"
         android:gravity="center_vertical"
         android:layout_weight="1"
         />
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:id="@+id/rating_TV"
-        android:gravity="center_vertical"
-        android:text="User Rating: "
-        android:layout_weight="1"
-        />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rating_TV"
+            android:gravity="center_vertical"
+            android:text="User Rating:"
+            android:textColor="#FFFFFF"
+            />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:isIndicator="true"
+            />
+
+
+    </LinearLayout>
+
 
 
 

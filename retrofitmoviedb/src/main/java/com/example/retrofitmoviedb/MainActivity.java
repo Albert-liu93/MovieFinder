@@ -12,9 +12,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.retrofitmoviedb.API.MovieClient;
@@ -27,6 +30,7 @@ import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,10 +42,10 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
-    private Button getMovieDetailBtn, searchMovieBtn;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
+    private SearchView searchView;
     private Context mContext;
 
     @Override
@@ -60,21 +64,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        searchMovieBtn = findViewById(R.id.mainActivity_searchBtn);
-        searchMovieBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(mContext, SearchMovie.class));
-            }
-        });
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(config);
 
         loadPopularImages();
+        loadUpcomingImages();
 
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (searchView != null) {
+            searchView.setQuery("", false);
+            searchView.clearFocus();
+            searchView.setIconified(true);
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+        MenuItem item = menu.findItem(R.id.search_movie);
+        searchView = (SearchView)item.getActionView();
+        searchView.setQueryHint("Search For Movie Title");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent intent = new Intent(mContext, SearchMovieActivity.class);
+                intent.putExtra("query", query);
+                startActivity(intent);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -109,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     Log.e(TAG, "jsonobject = " + response.body());
-                    displayData(response.body());
+                    displayData(response.body(), "popular");
                 } else {
                     Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "response unsuccessful" + response.code());
@@ -126,7 +159,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void displayData(JsonObject responseResult) {
+    private void loadUpcomingImages() {
+        Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
+
+        MovieClient client = retrofit.create(MovieClient.class);
+
+
+        Call<JsonObject> call = client.getUpcomingmovies(Constants.API_KEY);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    Log.e(TAG, "jsonobject = " + response.body());
+                    displayData(response.body(), "upcoming");
+                } else {
+                    Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "response unsuccessful" + response.code());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(mContext, "Failure!", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "failed");
+            }
+        });
+    }
+
+    private void displayData(JsonObject responseResult, String type) {
         int count = responseResult.get("total_results").getAsInt();
         Log.e(TAG, "total results = " + count);
         JsonArray resultsArray = responseResult.getAsJsonArray("results");
@@ -151,17 +212,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             MAX_RESULT--;
         }
-
-        initRecyclerView(posterBackDrop, idHashMap);
+        if (type.equals("popular")) {
+            initPopularRecyclerView(posterBackDrop, idHashMap);
+        } else if (type.equals("upcoming")) {
+            initUpcomingRecyclerView(posterBackDrop, idHashMap);
+        }
     }
 
-    private void initRecyclerView(ArrayList<String> posterBackDrop, HashMap<Integer, Integer> idHashMap) {
+    private void initPopularRecyclerView(ArrayList<String> posterBackDrop, HashMap<Integer, Integer> idHashMap) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView recyclerView = findViewById(R.id.mainPage_recycleView);
+        RecyclerView recyclerView = findViewById(R.id.mainPage_popularRecycleView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, posterBackDrop, idHashMap);
         recyclerView.setAdapter(recyclerViewAdapter);
+    }
 
+    private void initUpcomingRecyclerView(ArrayList<String> posterBackDrop, HashMap<Integer, Integer> idHashMap) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView recyclerView = findViewById(R.id.mainPage_upcomingRecycleView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, posterBackDrop, idHashMap);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 }
