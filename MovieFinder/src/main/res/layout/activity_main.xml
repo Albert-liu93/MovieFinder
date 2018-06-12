@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.example.moviefinder.MainActivity"
+    >
+
+    <LinearLayout
+        android:id="@+id/mainpage_LV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:id="@+id/popularMovie_TV"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Popular Movies"
+            android:textSize="24sp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="parent"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mainPage_popularRecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/popularMovie_TV"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:id="@+id/upcomingMovies_TV"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Upcoming Movies"
+            android:textSize="24sp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="parent"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mainPage_upcomingRecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/upcomingMovies_TV"
+            />
+
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:menu="@menu/drawer_menu"
+        app:itemTextColor="@color/darkgray"
+        >
+
+
+    </android.support.design.widget.NavigationView>
+
+</android.support.v4.widget.DrawerLayout>
