@@ -29,7 +29,7 @@ public class Utils {
 
     private static final String TAG = "Utils";
 
-    public static void getMovieDetails(int movieId, final Context mContext, final View view, final int resourceId) {
+    public static void getMovieDetails(final int movieId, final Context mContext, final View view, final int resourceId) {
 
         Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
         MovieClient client = retrofit.create(MovieClient.class);
@@ -44,6 +44,7 @@ public class Utils {
                     Log.e(TAG, "jsonobject = " + response.body());
                     Intent intent = new Intent(mContext, MovieDetailsActivity.class);
                     intent.putExtra("JSONObject", response.body().toString());
+                    intent.putExtra("movieId", movieId);
                     ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
                             view.findViewById(resourceId), "IV_transition");
                     mContext.startActivity(intent, optionsCompat.toBundle());

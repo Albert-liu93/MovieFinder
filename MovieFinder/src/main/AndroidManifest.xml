@@ -24,6 +24,7 @@
         <activity android:name="com.example.moviefinder.MovieDetailsActivity"></activity>
         <activity android:name="com.example.moviefinder.SearchMovieActivity"></activity>
         <activity android:name="com.example.moviefinder.AboutActivity"></activity>
+        <activity android:name=".VideoPlayerActivity"></activity>
     </application>
 
 </manifest>

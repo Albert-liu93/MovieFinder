@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private SearchView searchView;
     private Context mContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MovieClient client = retrofit.create(MovieClient.class);
 
 
-        Call<JsonObject> call = client.getPopularMovies(Constants.API_KEY);
+        Call<JsonObject> call = client.getPopularMovies(Constants.API_KEY, "US");
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MovieClient client = retrofit.create(MovieClient.class);
 
 
-        Call<JsonObject> call = client.getUpcomingmovies(Constants.API_KEY);
+        Call<JsonObject> call = client.getUpcomingmovies(Constants.API_KEY, "US");
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

@@ -54,7 +54,7 @@ public class SearchMovieActivity extends AppCompatActivity {
 
 
         ListView searchListView;
-        TextView noResultTV;
+        TextView noResultTV, searchTV;
         Context mContext;
         String TAG = "SearchMovieActivity";
 
@@ -65,6 +65,8 @@ public class SearchMovieActivity extends AppCompatActivity {
         mContext = this;
         searchListView = findViewById(R.id.movieSearch_lv);
         noResultTV = findViewById(R.id.search_no_results);
+        searchTV = findViewById(R.id.search_TV);
+        searchTV.setVisibility(View.INVISIBLE);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
@@ -119,7 +121,7 @@ public class SearchMovieActivity extends AppCompatActivity {
     }
 
 
-    private void searchMovie(String query) {
+    private void searchMovie(final String query) {
         Log.e(TAG, "searchMovie");
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -152,6 +154,8 @@ public class SearchMovieActivity extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     Log.e(TAG, "jsonobject = " + response.body());
+                    searchTV.setVisibility(View.VISIBLE);
+                    searchTV.setText("Showing results for " + query);
                     displayData(response.body());
                 } else {
                     Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();

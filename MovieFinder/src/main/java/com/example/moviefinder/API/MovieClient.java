@@ -3,6 +3,7 @@ package com.example.moviefinder.API;
 import com.google.gson.JsonObject;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -31,10 +32,18 @@ public interface MovieClient {
 
     @GET("popular")
     Call<JsonObject> getPopularMovies(
-            @Query("api_key") String api_key);
+            @Query("api_key") String api_key,
+            @Query("region") String region);
+
 
     @GET("upcoming")
     Call<JsonObject> getUpcomingmovies(
-            @Query("api_key") String api_key);
+            @Query("api_key") String api_key,
+            @Query("region") String region);
 
+    @GET("{id}/videos")
+    Call<JsonObject> getTrailers(
+            @Path("id") int id,
+            @Query("api_key") String api_key,
+            @Query("language") String language);
 }

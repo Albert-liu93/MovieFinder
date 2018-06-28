@@ -19,6 +19,7 @@
 
     <style name="Base.Widget.AppCompat.RatingBar." parent="Theme.AppCompat">
         <item name="colorControlNormal">#732222</item>
+        <item name="colorControlActivated">#732222</item>
     </style>
 
 </resources>

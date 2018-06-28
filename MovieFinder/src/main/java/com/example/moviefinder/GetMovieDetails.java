@@ -86,7 +86,7 @@ public class GetMovieDetails extends AppCompatActivity  implements View.OnClickL
 
         Retrofit retrofit = builder.build();
         MovieClient client = retrofit.create(MovieClient.class);
-        int MOVIE_ID;
+        final int MOVIE_ID;
         try {
             MOVIE_ID = Integer.parseInt(movieId.getText().toString());
         } catch (NumberFormatException e) {
@@ -100,10 +100,10 @@ public class GetMovieDetails extends AppCompatActivity  implements View.OnClickL
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     Log.e(TAG, "response code" + response.code());
-                    //go to new activity, pass jsonobject as string
                     Log.e(TAG, "jsonobject = " + response.body());
                     Intent intent = new Intent(mContext, MovieDetailsActivity.class);
                     intent.putExtra("JSONObject", response.body().toString());
+                    intent.putExtra("movieId", MOVIE_ID);
                     startActivity(intent);
                 } else {
                     movieResult.setText("Movie Could Not Be Found, Try Another ID");
