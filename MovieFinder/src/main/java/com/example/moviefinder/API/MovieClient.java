@@ -46,4 +46,10 @@ public interface MovieClient {
             @Path("id") int id,
             @Query("api_key") String api_key,
             @Query("language") String language);
+
+    @GET("{id}/credits")
+    Call<JsonObject> getCredits(
+            @Path("id") int id,
+            @Query("api_key") String api_key);
+
 }

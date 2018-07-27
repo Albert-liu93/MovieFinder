@@ -17,15 +17,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.moviefinder.API.MovieClient;
 import com.example.moviefinder.API.RetrofitUtils;
 import com.example.moviefinder.Adapters.RecyclerViewAdapter;
+import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.Utils.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -146,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
 
         MovieClient client = retrofit.create(MovieClient.class);
-
 
         Call<JsonObject> call = client.getPopularMovies(Constants.API_KEY, "US");
         call.enqueue(new Callback<JsonObject>() {

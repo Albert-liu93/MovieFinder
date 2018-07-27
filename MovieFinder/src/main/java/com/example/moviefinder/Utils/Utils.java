@@ -1,10 +1,11 @@
-package com.example.moviefinder;
+package com.example.moviefinder.Utils;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +14,11 @@ import android.widget.Toast;
 import com.example.moviefinder.API.MovieClient;
 import com.example.moviefinder.API.RetrofitUtils;
 import com.example.moviefinder.Adapters.RecyclerViewAdapter;
+import com.example.moviefinder.Callbacks.OnTaskCompleted;
+import com.example.moviefinder.Callbacks.SuccessCallback;
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.MovieDetailsActivity;
+import com.example.moviefinder.MovieDetailsActivityTabbed;
 import com.google.gson.JsonObject;
 
 import retrofit2.Call;
@@ -29,7 +34,7 @@ public class Utils {
 
     private static final String TAG = "Utils";
 
-    public static void getMovieDetails(final int movieId, final Context mContext, final View view, final int resourceId) {
+    public static void getMovieDetails(final int movieId, final Context mContext, final View view, final int resourceId, final SuccessCallback callback) {
 
         Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
         MovieClient client = retrofit.create(MovieClient.class);
@@ -42,20 +47,24 @@ public class Utils {
                     Log.e(TAG, "response code" + response.code());
                     //go to new activity, pass jsonobject as string
                     Log.e(TAG, "jsonobject = " + response.body());
-                    Intent intent = new Intent(mContext, MovieDetailsActivity.class);
+                    Intent intent = new Intent(mContext, MovieDetailsActivityTabbed.class);
                     intent.putExtra("JSONObject", response.body().toString());
                     intent.putExtra("movieId", movieId);
                     ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
                             view.findViewById(resourceId), "IV_transition");
+                    callback.success();
                     mContext.startActivity(intent, optionsCompat.toBundle());
+
                 } else {
                     Toast.makeText(mContext, "Error in response", Toast.LENGTH_SHORT).show();
+                    callback.error();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast.makeText(mContext, "Failure!", Toast.LENGTH_SHORT).show();
+                callback.error();
             }
         });
 

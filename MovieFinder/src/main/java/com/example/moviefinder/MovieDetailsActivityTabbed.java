@@ -1,9 +1,13 @@
 package com.example.moviefinder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +22,9 @@ import com.example.moviefinder.API.MovieClient;
 import com.example.moviefinder.API.RetrofitUtils;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.Fragments.Cast;
+import com.example.moviefinder.Fragments.MovieInfo;
+import com.example.moviefinder.Fragments.Trailer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,63 +44,67 @@ import retrofit2.Retrofit;
  * Created by Albert on 5/11/2018.
  */
 
-public class MovieDetailsActivity extends AppCompatActivity implements View.OnClickListener, OnTaskCompleted {
+public class MovieDetailsActivityTabbed extends AppCompatActivity implements View.OnClickListener, OnTaskCompleted {
 
     JsonObject movieJSON = new JsonObject();
+    JsonObject creditsJSON = new JsonObject();
     String TAG = "MovieDetailsActivity";
     TextView title, overview, genres, releaseDate, rating;
     ImageView poster, backdrop;
     RatingBar ratingBar;
-    Button trailerBtn;
     int movieId;
-    String videoURL;
+    String videoURL, JSONString, creditsJSONString;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_details);
+        setContentView(R.layout.activity_movie_details_tabbed);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        title = findViewById(R.id.movie_original_title_TV);
-        overview = findViewById(R.id.movie_overview_TV);
-        genres = findViewById(R.id.movie_genres_TV);
-        releaseDate = findViewById(R.id.movie_release_date_TV);
         poster = findViewById(R.id.movie_IV);
         backdrop = findViewById(R.id.movie_background_poster_IV);
-        rating = findViewById(R.id.rating_TV);
-        ratingBar = findViewById(R.id.ratingBar);
-        trailerBtn = findViewById(R.id.trailer_btn);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
-
+        Bundle bundle = new Bundle();
         Intent intent = getIntent();
         if (intent.hasExtra("JSONObject")) {
-            String JSONString = intent.getStringExtra("JSONObject");
+            JSONString = intent.getStringExtra("JSONObject");
             JsonParser jsonParser = new JsonParser();
             movieJSON = (JsonObject) jsonParser.parse(JSONString);
+            bundle.putString("JSONObject", JSONString);
         }
         if (intent.hasExtra("movieId")) {
             movieId = intent.getIntExtra("movieId", 0);
-            VideoCheck videoCheck = new VideoCheck(this);
-            videoCheck.execute();
+            bundle.putInt("movieId", movieId);
+            backgroundInfo backgroundInfo = new backgroundInfo(this, movieId);
+            backgroundInfo.execute();
+
         }
-        loadText(movieJSON);
+
+
+//        loadText(movieJSON);
         ImageLoader imageLoader = ImageLoader.getInstance();
         String imageURL = Constants.movieDB_Image_URL + movieJSON.get("poster_path").getAsString();
         String posterURL = Constants.movieDB_Image_URL + movieJSON.get("backdrop_path").getAsString();
         imageLoader.displayImage(imageURL, poster);
         imageLoader.displayImage(posterURL, backdrop);
 
+        MovieInfo movieInfo = new MovieInfo();
+        movieInfo.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.moviedetail_fragmentcontainer, movieInfo).commit();
+
     }
 
     @Override
     public void onTaskCompleted(String result) {
-        trailerBtn.setOnClickListener(this);
         videoURL = result;
     }
 
     @Override
     public void onTaskCompleted(JsonObject object) {
-
+        creditsJSON = object;
     }
 
     @Override
@@ -109,6 +120,36 @@ public class MovieDetailsActivity extends AppCompatActivity implements View.OnCl
         }
         return true;
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment selectedFragment = null;
+                    Bundle bundle = new Bundle();
+                    switch (item.getItemId()) {
+                        case R.id.action_movie_info:
+                            bundle.putString("JSONObject", JSONString);
+                            bundle.putInt("movieId", movieId);
+                            selectedFragment = new MovieInfo();
+                            selectedFragment.setArguments(bundle);
+                            break;
+                        case R.id.action_movie_cast:
+                            bundle.putString("JSONObject", creditsJSON.toString());
+                            selectedFragment = new Cast();
+                            selectedFragment.setArguments(bundle);
+                            break;
+                        case R.id.action_movie_trailer:
+                            bundle.putString("video_URL", videoURL);
+                            selectedFragment = new Trailer();
+                            selectedFragment.setArguments(bundle);
+                            break;
+                    }
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.moviedetail_fragmentcontainer, selectedFragment).commit();
+                    return true;
+                }
+            };
 
     private void loadText(JsonObject movieJSON) {
         Log.e(TAG, "json " + movieJSON);
@@ -149,13 +190,14 @@ public class MovieDetailsActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private class VideoCheck extends AsyncTask<Void, Void, Void>{
+    private class backgroundInfo extends AsyncTask<Void, Void, Void>{
 
         private OnTaskCompleted onTaskCompleted;
+        private int movieId;
 
-
-        public VideoCheck(OnTaskCompleted activityContext) {
+        public backgroundInfo(OnTaskCompleted activityContext, int id) {
             this.onTaskCompleted = activityContext;
+            this.movieId = id;
         }
 
         @Override
@@ -168,8 +210,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements View.OnCl
         protected Void doInBackground(Void... voids) {
             Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
             MovieClient client = retrofit.create(MovieClient.class);
-            Call<JsonObject> call = client.getTrailers(movieId, Constants.API_KEY, "en-US");
-            call.enqueue(new Callback<JsonObject>() {
+            Call<JsonObject> trailerCall = client.getTrailers(movieId, Constants.API_KEY, "en-US");
+            trailerCall.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
@@ -180,7 +222,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements View.OnCl
                             JsonObject arrayObject = element.getAsJsonObject();
                             String trailerURL = arrayObject.get("key").getAsString();
                             if (!trailerURL.isEmpty()) {
-                                trailerBtn.setClickable(true);
                                 onTaskCompleted.onTaskCompleted(trailerURL);
                             }
                         }
@@ -189,6 +230,25 @@ public class MovieDetailsActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                         Log.e(TAG, "Couldn't retrieve trailers!");
+                }
+            });
+
+            Call<JsonObject> creditsCall = client.getCredits(movieId, Constants.API_KEY);
+            creditsCall.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful()) {
+                        Log.e(TAG, "response " + response.code());
+                        JsonObject object = response.body();
+                        if (!object.isJsonNull()) {
+                            onTaskCompleted.onTaskCompleted(object);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    Log.e(TAG, "Couldn't retrieve credits!");
                 }
             });
             return null;

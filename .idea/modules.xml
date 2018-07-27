@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Android Projects.iml" filepath="$PROJECT_DIR$/Android Projects.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MovieFinder/MovieFinder.iml" filepath="$PROJECT_DIR$/MovieFinder/MovieFinder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/retrofitGithub/retrofitGithub.iml" filepath="$PROJECT_DIR$/retrofitGithub/retrofitGithub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/retrofitjsonplaceholder/retrofitjsonplaceholder.iml" filepath="$PROJECT_DIR$/retrofitjsonplaceholder/retrofitjsonplaceholder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/retroftitpost/retroftitpost.iml" filepath="$PROJECT_DIR$/retroftitpost/retroftitpost.iml" />
+    </modules>
+  </component>
+</project>

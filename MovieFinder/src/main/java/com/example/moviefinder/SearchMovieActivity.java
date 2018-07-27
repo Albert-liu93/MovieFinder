@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.moviefinder.API.MovieClient;
+import com.example.moviefinder.Callbacks.OnTaskCompleted;
+import com.example.moviefinder.Callbacks.SuccessCallback;
 import com.example.moviefinder.Constants.Constants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,7 +46,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.moviefinder.Utils.getMovieDetails;
+import static com.example.moviefinder.Utils.Utils.getMovieDetails;
+
 
 /**
  * Created by Albert on 5/15/2018.
@@ -221,7 +224,17 @@ public class SearchMovieActivity extends AppCompatActivity {
                     Log.e(TAG, "id = " + id);
                     int movieId = idHashMap.get((int)id+1);
                     Log.e(TAG, "movideID clicked" + movieId);
-                    getMovieDetails(movieId, mContext, view, R.id.movie_search_IV);
+                    getMovieDetails(movieId, mContext, view, R.id.movie_search_IV, new SuccessCallback() {
+                        @Override
+                        public void success() {
+
+                        }
+
+                        @Override
+                        public void error() {
+
+                        }
+                    });
                 }
             });
         }

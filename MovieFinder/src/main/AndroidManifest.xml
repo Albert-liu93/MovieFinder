@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.moviefinder">
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -13,18 +12,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.moviefinder.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.moviefinder.GetMovieDetails"></activity>
-        <activity android:name="com.example.moviefinder.MovieDetailsActivity"></activity>
-        <activity android:name="com.example.moviefinder.SearchMovieActivity"></activity>
-        <activity android:name="com.example.moviefinder.AboutActivity"></activity>
-        <activity android:name=".VideoPlayerActivity"></activity>
+        <activity android:name=".GetMovieDetails" />
+        <activity android:name=".MovieDetailsActivity" />
+        <activity android:name=".SearchMovieActivity" />
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".VideoPlayerActivity" />
+        <activity android:name=".MovieDetailsActivityTabbed" />
+        <activity android:name=".Fragments.MovieInfo"></activity>
     </application>
 
 </manifest>

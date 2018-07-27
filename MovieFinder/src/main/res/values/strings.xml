@@ -3,4 +3,8 @@
     <string name="menu_open">open</string>
     <string name="menu_close">close</string>
     <string name="movieDB_attribution">This product uses the TMDb API but is not endorsed or certified by TMDb.</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pharetra ultricies aliquam.
+        Aliquam facilisis, nulla a ornare vulputate, lacus tellus auctor dolor, in placerat nibh turpis eu felis. Donec nibh tortor,
+        condimentum in lobortis non, imperdiet ut nisl. Nunc pharetra sodales orci non consectetur. Sed quis neque dolor. Nullam id nisi feugiat, ullamcorper magna eget, venenatis nunc. Nunc sit amet justo quis nunc porttitor vulputate.
+        Praesent pharetra venenatis erat, ornare fringilla lorem ornare eu. Nulla sed turpis sit amet mauris pharetra molestie.</string>
 </resources>

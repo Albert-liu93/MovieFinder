@@ -101,7 +101,7 @@ public class GetMovieDetails extends AppCompatActivity  implements View.OnClickL
                 if (response.isSuccessful()) {
                     Log.e(TAG, "response code" + response.code());
                     Log.e(TAG, "jsonobject = " + response.body());
-                    Intent intent = new Intent(mContext, MovieDetailsActivity.class);
+                    Intent intent = new Intent(mContext, MovieDetailsActivityTabbed.class);
                     intent.putExtra("JSONObject", response.body().toString());
                     intent.putExtra("movieId", MOVIE_ID);
                     startActivity(intent);
