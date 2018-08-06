@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.moviefinder.Constants.Constants;
@@ -69,7 +70,6 @@ public class CastRecyclerViewAdapter extends RecyclerView.Adapter<CastRecyclerVi
 
         ImageView image;
         TextView name;
-
         public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.cast_picture_IV);

@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,16 +55,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-        ImageLoader imageLoader = ImageLoader.getInstance();
-
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(android.R.drawable.stat_notify_error)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .cacheInMemory(true)
-                .build();
-
         String imageURL = Constants.movieDB_Image_URL + posterURLs.get(position);
-        imageLoader.displayImage(imageURL, holder.image, options);
+        Picasso.get()
+                .load(imageURL)
+                .placeholder(android.R.drawable.stat_notify_error)
+                .error(android.R.drawable.stat_notify_error)
+                .into(holder.image, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        holder.progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
 
         holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -103,10 +111,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView image;
+        ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.recycle_IV);
+            progressBar = itemView.findViewById(R.id.movie_poster_progressbar);
         }
     }
 }

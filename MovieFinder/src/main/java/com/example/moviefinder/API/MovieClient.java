@@ -28,6 +28,8 @@ public interface MovieClient {
     @GET("movie")
     Call<JsonObject> getSearchQuery(
             @Query("query") String text,
+            @Query("page") int page,
+            @Query("include_adult") boolean allowAdult,
             @Query("api_key") String api_key);
 
     @GET("popular")

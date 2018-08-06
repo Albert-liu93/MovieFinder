@@ -27,6 +27,14 @@
                 android:transitionName="IV_transition"
                 />
 
+            <ProgressBar
+                android:id="@+id/movie_poster_progressbar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerInParent="true"
+                style="?android:attr/progressBarStyleLarge"
+                />
+
         </RelativeLayout>
 
 

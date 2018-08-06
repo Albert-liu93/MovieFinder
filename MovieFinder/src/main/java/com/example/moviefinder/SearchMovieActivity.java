@@ -18,11 +18,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.moviefinder.API.MovieClient;
+import com.example.moviefinder.Adapters.EndlessScrollListener;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Callbacks.SuccessCallback;
 import com.example.moviefinder.Constants.Constants;
@@ -34,6 +37,7 @@ import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,10 +60,20 @@ import static com.example.moviefinder.Utils.Utils.getMovieDetails;
 public class SearchMovieActivity extends AppCompatActivity {
 
 
-        ListView searchListView;
-        TextView noResultTV, searchTV;
-        Context mContext;
-        String TAG = "SearchMovieActivity";
+    ListView searchListView;
+    TextView noResultTV;
+    RelativeLayout progressLayout;
+    Context mContext;
+    String TAG = "SearchMovieActivity";
+    ArrayList<String> titles = new ArrayList<>();
+    ArrayList<String> dates = new ArrayList<>();
+    ArrayList<String> posterBackDrop = new ArrayList<>();
+    HashMap<Integer, Integer> idHashMap = new HashMap<>();
+    ArrayAdapter arrayAdapter;
+    String query = "";
+    int key = 1;
+    int page = 1;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,16 +82,15 @@ public class SearchMovieActivity extends AppCompatActivity {
         mContext = this;
         searchListView = findViewById(R.id.movieSearch_lv);
         noResultTV = findViewById(R.id.search_no_results);
-        searchTV = findViewById(R.id.search_TV);
-        searchTV.setVisibility(View.INVISIBLE);
+        progressLayout = findViewById(R.id.loadingMore_progressBar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
 
         Intent intent = getIntent();
         if (intent.hasExtra("query")) {
-            String query = intent.getStringExtra("query");
-            searchMovie(query);
+            query = intent.getStringExtra("query");
+            searchMovie(query, 1);
         }
     }
 
@@ -103,14 +116,17 @@ public class SearchMovieActivity extends AppCompatActivity {
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.search_movie);
         SearchView searchView = (SearchView)item.getActionView();
+        searchView.setIconifiedByDefault(false);
         searchView.setQueryHint("Search For Movie Title");
+        if (!query.isEmpty()) {
+            searchView.setQuery(query, false);
+        }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchMovie(query);
-
-
-
+            public boolean onQueryTextSubmit(String inputQuery) {
+                query = inputQuery;
+                clearData();
+                searchMovie(query, 1);
                 return false;
             }
 
@@ -124,7 +140,13 @@ public class SearchMovieActivity extends AppCompatActivity {
     }
 
 
-    private void searchMovie(final String query) {
+    private void searchMovie(final String query, int page) {
+        if (page == 1) {
+            key = 1;
+        } else {
+            progressLayout.setVisibility(View.VISIBLE);
+        }
+
         Log.e(TAG, "searchMovie");
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -138,10 +160,6 @@ public class SearchMovieActivity extends AppCompatActivity {
 
         httpClient.addInterceptor(logging);
 
-
-
-
-
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl("https://api.themoviedb.org/3/search/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -150,15 +168,13 @@ public class SearchMovieActivity extends AppCompatActivity {
         Retrofit retrofit = builder.build();
         MovieClient client = retrofit.create(MovieClient.class);
 
-        Call<JsonObject> call = client.getSearchQuery(query, Constants.API_KEY);
+        Call<JsonObject> call = client.getSearchQuery(query, page, false, Constants.API_KEY);
 
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     Log.e(TAG, "jsonobject = " + response.body());
-                    searchTV.setVisibility(View.VISIBLE);
-                    searchTV.setText("Showing results for " + query);
                     displayData(response.body());
                 } else {
                     Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();
@@ -177,7 +193,6 @@ public class SearchMovieActivity extends AppCompatActivity {
 
 
     private void displayData(JsonObject jsonObject) {
-
         searchListView.setVisibility(View.VISIBLE);
         noResultTV.setVisibility(View.INVISIBLE);
         JsonObject result = jsonObject;
@@ -188,11 +203,6 @@ public class SearchMovieActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "total results = " + count);
             JsonArray resultsArray = result.getAsJsonArray("results");
-            ArrayList<String> titles = new ArrayList<>();
-            ArrayList<String> dates = new ArrayList<>();
-            ArrayList<String> posterBackDrop = new ArrayList<>();
-            final HashMap<Integer, Integer> idHashMap = new HashMap<>();
-            int key = 1;
             for (JsonElement element : resultsArray) {
                 JsonObject object = element.getAsJsonObject();
                 titles.add(object.get("title").getAsString());
@@ -213,9 +223,25 @@ public class SearchMovieActivity extends AppCompatActivity {
                 }
                 key++;
             }
+            Log.e("page = ", " =" + page);
+            if (arrayAdapter == null) {
+                arrayAdapter = new MovieAdapter(this, titles, posterBackDrop,dates);
+            }
+            if (page == 1) {
+                searchListView.setAdapter(arrayAdapter);
+                searchListView.setOnScrollListener(new EndlessScrollListener() {
+                    @Override
+                    public boolean onLoadMore(int loadPage, int totalItemsCount) {
+                        page = loadPage;
+                        searchMovie(query, loadPage);
+                        return true;
+                    }
+                });
+            } else {
+                arrayAdapter.notifyDataSetChanged();
+                progressLayout.setVisibility(View.GONE);
+            }
 
-            ArrayAdapter arrayAdapter = new MovieAdapter(this, titles, posterBackDrop,dates);
-            searchListView.setAdapter(arrayAdapter);
 
             searchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -238,6 +264,13 @@ public class SearchMovieActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void clearData() {
+        titles.clear();
+        dates.clear();
+        posterBackDrop.clear();
+        idHashMap.clear();
     }
 
 
@@ -264,25 +297,27 @@ public class SearchMovieActivity extends AppCompatActivity {
             TextView title = customView.findViewById(R.id.movie_search_TV);
             TextView year = customView.findViewById(R.id.movie_search_date_TV);
             ImageView poster = customView.findViewById(R.id.movie_search_IV);
+            final ProgressBar progressBar = customView.findViewById(R.id.movieSearch_IV_ProgressBar);
 
             title.setText(titles.get(position));
             year.setText("(" + dates.get(position) + ")");
-            Log.e(TAG, "poster url = " + posterBackDrop.get(position));
-
-            ImageLoader imageLoader = ImageLoader.getInstance();
-
-            DisplayImageOptions options = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(android.R.drawable.stat_notify_error)
-                    .imageScaleType(ImageScaleType.EXACTLY)
-                    .cacheInMemory(true)
-                    .build();
 
             String imageURL = Constants.movieDB_Image_URL + posterBackDrop.get(position);
-            if (imageURL.equals("")) {
-                poster.setImageResource(R.drawable.ic_crop_original_black_24dp);
-            } else {
-                imageLoader.displayImage(imageURL, poster,options);
-            }
+
+            Picasso.get()
+                    .load(imageURL)
+                    .error(android.R.drawable.stat_notify_error)
+                    .into(poster, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
             return customView;
         }
     }

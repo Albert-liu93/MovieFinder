@@ -9,7 +9,7 @@
     tools:context="com.example.moviefinder.MainActivity"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/mainpage_LV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:text="popular movies"
             android:textSize="24sp"
             android:layout_marginTop="5dp"
-            app:layout_constraintTop_toBottomOf="parent"
+            android:layout_alignParentTop="true"
             />
 
         <android.support.v7.widget.RecyclerView
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@+id/popularMovie_TV"
+            android:layout_below="@+id/popularMovie_TV"
             />
 
         <TextView
@@ -43,7 +43,7 @@
             android:text="upcoming movies"
             android:textSize="24sp"
             android:layout_marginTop="5dp"
-            app:layout_constraintTop_toBottomOf="parent"
+            android:layout_below="@+id/mainPage_popularRecycleView"
             />
 
         <android.support.v7.widget.RecyclerView
@@ -52,11 +52,27 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@+id/upcomingMovies_TV"
+            android:layout_below="@id/upcomingMovies_TV"
             />
 
 
-    </LinearLayout>
+
+
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            >
+        </com.google.android.gms.ads.AdView>
+
+    </RelativeLayout>
+
+
 
 
     <android.support.design.widget.NavigationView

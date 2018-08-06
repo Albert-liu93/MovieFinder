@@ -25,11 +25,13 @@ import com.example.moviefinder.Constants.Constants;
 import com.example.moviefinder.Fragments.Cast;
 import com.example.moviefinder.Fragments.MovieInfo;
 import com.example.moviefinder.Fragments.Trailer;
+import com.google.api.client.util.StringUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -85,12 +87,46 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
 
 
 //        loadText(movieJSON);
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        String imageURL = Constants.movieDB_Image_URL + movieJSON.get("poster_path").getAsString();
-        String posterURL = Constants.movieDB_Image_URL + movieJSON.get("backdrop_path").getAsString();
-        imageLoader.displayImage(imageURL, poster);
-        imageLoader.displayImage(posterURL, backdrop);
+        String imageURL = "";
+        String backdropURL = "";
+        if (!movieJSON.get("poster_path").isJsonNull()) {
+            imageURL = Constants.movieDB_Image_URL + movieJSON.get("poster_path").getAsString();
+        }
+        if (!movieJSON.get("backdrop_path").isJsonNull()) {
+            backdropURL = Constants.movieDB_Image_URL + movieJSON.get("backdrop_path").getAsString();
+        }
+        if (!imageURL.isEmpty()) {
+            Picasso.get()
+                    .load(imageURL)
+                    .error(android.R.drawable.stat_notify_error)
+                    .into(poster, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
 
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+        }
+        if (!backdropURL.isEmpty()) {
+            Picasso.get()
+                    .load(imageURL)
+                    .error(android.R.drawable.stat_notify_error)
+                    .into(backdrop, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+        }
         MovieInfo movieInfo = new MovieInfo();
         movieInfo.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.moviedetail_fragmentcontainer, movieInfo).commit();

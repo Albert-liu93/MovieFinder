@@ -26,6 +26,9 @@ import com.example.moviefinder.Adapters.RecyclerViewAdapter;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Constants.Constants;
 import com.example.moviefinder.Utils.Utils;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private SearchView searchView;
     private Context mContext;
+    private AdView adView;
 
 
     @Override
@@ -59,6 +63,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         drawerLayout = findViewById(R.id.drawer_layout);
+
+        //admob
+        MobileAds.initialize(mContext, "ca-app-pub-3940256099942544~3347511713");
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("74D028AA77CD10324FBC73179CDE0E8F").build();
+        adView.loadAd(adRequest);
+
+        //nav drawer
         mToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.menu_open, R.string.menu_close);
         drawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
