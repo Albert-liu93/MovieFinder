@@ -3,6 +3,7 @@ package com.example.moviefinder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -73,6 +74,10 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
         ratingBar = findViewById(R.id.ratingBar);
         Bundle bundle = new Bundle();
         Intent intent = getIntent();
+        if (Build.VERSION.SDK_INT >= 21) {
+            String imageTransitionName = intent.getStringExtra("transitionName");
+            poster.setTransitionName(imageTransitionName);
+        }
         if (intent.hasExtra("JSONObject")) {
             JSONString = intent.getStringExtra("JSONObject");
             JsonParser jsonParser = new JsonParser();
@@ -84,7 +89,6 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
             bundle.putInt("movieId", movieId);
             backgroundInfo backgroundInfo = new backgroundInfo(this, movieId);
             backgroundInfo.execute();
-
         }
 
 

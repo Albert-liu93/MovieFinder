@@ -23,11 +23,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/movie_overview_TV"
-                android:textSize="15dp"
+                android:textSize="17dp"
                 android:text="@string/lorem_ipsum"
                 android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="17dp"
                 android:layout_marginTop="30dp"
                 />
             <TextView
@@ -35,19 +35,21 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/movie_genres_TV"
                 android:gravity="center_vertical"
+                android:textSize="17dp"
                 android:text="Genres: "
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="17dp"
                 android:layout_marginTop="40dp"
                 />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/movie_release_date_TV"
+                android:textSize="17dp"
                 android:text="Release Date: "
                 android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="17dp"
                 android:layout_marginTop="40dp"
                 />
 
@@ -59,9 +61,10 @@
                     android:id="@+id/note_TV"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="17dp"
                     android:layout_marginTop="40dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginRight="17dp"
+                    android:textSize="17dp"
                     android:text="Notes" />
 
                 <ImageButton
@@ -78,8 +81,9 @@
                 android:id="@+id/note_TV_blurb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:textSize="17dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="17dp"
                 android:layout_marginTop="10dp"
                 />
         </LinearLayout>

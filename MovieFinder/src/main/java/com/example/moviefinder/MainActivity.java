@@ -23,6 +23,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.moviefinder.API.MovieClient;
 import com.example.moviefinder.API.RetrofitUtils;
 import com.example.moviefinder.Adapters.RecyclerViewAdapter;
@@ -45,6 +46,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,9 +70,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mContext = this;
         TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "fonts/Futura Book font.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
 
+        //Stetho
         Stetho.initializeWithDefaults(this);
-
+        //Database Creation
         DatabaseHelper.getsInstance(mContext);
+        //Crashlytics
+        Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();

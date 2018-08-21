@@ -2,7 +2,9 @@ package com.example.moviefinder.Adapters;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,7 +73,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                     }
                 });
-
+        ViewCompat.setTransitionName(holder.image, idHashMap.get(position+1).toString());
         holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -82,7 +84,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     Log.d(TAG, "Clicked on image url " + posterURLs.get(position));
                     Log.d(TAG, "Movie has id" + idHashMap.get(position+1));
                     int movieId = idHashMap.get(position+1);
-                    Utils.getMovieDetails(movieId, mContext, holder.itemView, R.id.recycle_IV, new SuccessCallback() {
+
+                    Utils.getMovieDetails(movieId, mContext, null, holder.image, new SuccessCallback() {
 
                         @Override
                         public void success() {

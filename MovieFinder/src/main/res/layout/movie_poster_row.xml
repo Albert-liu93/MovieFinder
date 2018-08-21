@@ -24,7 +24,6 @@
                 android:scaleType="centerCrop"
                 android:visibility="visible"
                 android:src="@drawable/ic_crop_original_black_24dp"
-                android:transitionName="IV_transition"
                 />
 
             <ProgressBar

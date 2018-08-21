@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.moviefinder.API.MovieClient;
@@ -33,7 +36,7 @@ public class Utils {
 
     private static final String TAG = "Utils";
 
-    public static void getMovieDetails(final int movieId, final Context mContext, final View view, final int resourceId, final SuccessCallback callback) {
+    public static void getMovieDetails(final int movieId, final Context mContext, final View view, final ImageView imageView, final SuccessCallback callback) {
 
         Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
         MovieClient client = retrofit.create(MovieClient.class);
@@ -47,13 +50,20 @@ public class Utils {
                     //go to new activity, pass jsonobject as string
                     Log.e(TAG, "jsonobject = " + response.body());
                     Intent intent = new Intent(mContext, MovieDetailsActivityTabbed.class);
+
                     intent.putExtra("JSONObject", response.body().toString());
                     intent.putExtra("movieId", movieId);
-                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
-                            view.findViewById(resourceId), "IV_transition");
+                    intent.putExtra("transitionName", ViewCompat.getTransitionName(imageView));
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                (Activity) mContext,
+                                imageView,
+                                ViewCompat.getTransitionName(imageView));
+                        mContext.startActivity(intent, optionsCompat.toBundle());
+                    } else {
+                        mContext.startActivity(intent);
+                    }
                     callback.success();
-                    mContext.startActivity(intent, optionsCompat.toBundle());
-
                 } else {
                     Toast.makeText(mContext, "Error in response", Toast.LENGTH_SHORT).show();
                     callback.error();

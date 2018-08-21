@@ -22,7 +22,6 @@
             android:id="@+id/movie_IV"
             android:layout_centerVertical="true"
             android:layout_marginLeft="30dp"
-            android:transitionName="IV_transition"
             />
         <TextView
             android:id="@+id/movie_title"

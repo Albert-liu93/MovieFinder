@@ -28,6 +28,10 @@
             android:screenOrientation="nosensor"/>
         <activity android:name=".MovieDetailsActivityTabbed"
             android:screenOrientation="nosensor"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="d4454774b809577dcd229053cd1aa8c534467216"
+            />
     </application>
 
 </manifest>

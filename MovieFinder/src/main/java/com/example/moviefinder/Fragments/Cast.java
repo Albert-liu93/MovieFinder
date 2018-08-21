@@ -75,7 +75,7 @@ public class Cast extends Fragment {
         JsonArray castArray = castJson.getAsJsonArray("cast");
         int MAX_RESULT = 0;
         for (JsonElement element : castArray) {
-            if (MAX_RESULT == 5) {
+            if (MAX_RESULT == 7) {
                 break;
             } else {
                 JsonObject castObject = element.getAsJsonObject();
