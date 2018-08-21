@@ -1,17 +1,22 @@
 package com.example.moviefinder.Fragments;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.moviefinder.Database.DatabaseHelper;
 import com.example.moviefinder.R;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,19 +27,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MovieInfo extends Fragment {
+public class MovieInfo extends Fragment implements View.OnClickListener {
 
     String TAG = "MovieInfoFragment";
-    TextView title, overview, genres, releaseDate, rating;
-    RatingBar ratingBar;
+    TextView overview, genres, releaseDate, note_TV_blurb;
     JsonObject movieJSON;
+    ImageView noteBtn;
+    int movieId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.activity_movie_info_fragment, container, false);
-
         getArguments(this.getArguments());
         return view;
 
@@ -43,28 +48,54 @@ public class MovieInfo extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        title = getView().findViewById(R.id.movie_original_title_TV);
         overview = getView().findViewById(R.id.movie_overview_TV);
         genres = getView().findViewById(R.id.movie_genres_TV);
         releaseDate = getView().findViewById(R.id.movie_release_date_TV);
-        rating = getView().findViewById(R.id.rating_TV);
-        ratingBar = getView().findViewById(R.id.ratingBar);
+        noteBtn = getView().findViewById(R.id.note_IB);
+        note_TV_blurb = getView().findViewById(R.id.note_TV_blurb);
+        if (noteBtn != null) {
+            noteBtn.setOnClickListener(this);
+        }
         if (movieJSON != null || movieJSON.isJsonNull()) {
             loadText();
+        }
+        loadNote();
+    }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.note_IB:
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                final EditText editText = new EditText(getContext());
+                builder.setTitle("Enter Note");
+                builder.setView(editText);
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String note = editText.getText().toString();
+                        //save note to database
+                        DatabaseHelper databaseHelper = DatabaseHelper.getsInstance(getContext());
+                        databaseHelper.updateNote(movieId,note);
+                        dialogInterface.dismiss();
+                        //update UI to reflect new
+                        loadNote();
+                    }
+                });
+                builder.show();
         }
     }
 
     private void getArguments(Bundle bundle) {
         String JSONString = bundle.getString("JSONObject");
+        movieId = bundle.getInt("movieId");
         JsonParser jsonParser = new JsonParser();
         movieJSON = (JsonObject) jsonParser.parse(JSONString);
     }
 
     private void loadText() {
         Log.e(TAG, "json " + movieJSON);
-        title.append(movieJSON.get("original_title").getAsString());
-        overview.append(movieJSON.get("overview").getAsString());
+        overview.setText(movieJSON.get("overview").getAsString());
         JsonArray jsonArray = movieJSON.getAsJsonArray("genres");
         Log.e(TAG, "jsonArray" + jsonArray);
         int size = jsonArray.size();
@@ -87,6 +118,10 @@ public class MovieInfo extends Fragment {
         }
         String releaseDateFormatted = outputDate.format(convertedDate);
         releaseDate.append(releaseDateFormatted);
-        ratingBar.setRating((Float.parseFloat(movieJSON.get("vote_average").getAsString()))/2.0F);
+    }
+
+    private void loadNote() {
+        String note = DatabaseHelper.getsInstance(getContext()).loadNote(movieId);
+        note_TV_blurb.setText(note);
     }
 }

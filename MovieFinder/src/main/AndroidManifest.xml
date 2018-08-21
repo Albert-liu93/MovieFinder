@@ -12,20 +12,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GetMovieDetails" />
-        <activity android:name=".MovieDetailsActivity" />
-        <activity android:name=".SearchMovieActivity" />
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".VideoPlayerActivity" />
-        <activity android:name=".MovieDetailsActivityTabbed" />
-        <activity android:name=".Fragments.MovieInfo"></activity>
+        <activity android:name=".SearchMovieActivity"
+            android:screenOrientation="nosensor"/>
+        <activity android:name=".AboutActivity"
+            android:screenOrientation="nosensor"/>
+        <activity android:name=".VideoPlayerActivity"
+            android:screenOrientation="nosensor"/>
+        <activity android:name=".MovieDetailsActivityTabbed"
+            android:screenOrientation="nosensor"/>
     </application>
 
 </manifest>

@@ -306,7 +306,7 @@ public class SearchMovieActivity extends AppCompatActivity {
 
             Picasso.get()
                     .load(imageURL)
-                    .error(android.R.drawable.stat_notify_error)
+                    .error(R.drawable.ic_photo_grey_24dp)
                     .into(poster, new com.squareup.picasso.Callback() {
                         @Override
                         public void onSuccess() {

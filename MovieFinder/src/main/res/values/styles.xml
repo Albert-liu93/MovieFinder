@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:actionMenuTextColor">@android:color/black</item>
         <item name="android:textColor">#000000</item>
+        <item name="android:typeface">serif</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
 
@@ -18,8 +19,9 @@
     </style>
 
     <style name="Base.Widget.AppCompat.RatingBar." parent="Theme.AppCompat">
-        <item name="colorControlNormal">#732222</item>
-        <item name="colorControlActivated">#732222</item>
+        <item name="colorControlNormal">#fff955</item>
+        <item name="colorControlActivated">#fff955</item>
+
     </style>
 
 </resources>

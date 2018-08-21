@@ -17,7 +17,6 @@ import com.example.moviefinder.Adapters.RecyclerViewAdapter;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Callbacks.SuccessCallback;
 import com.example.moviefinder.Constants.Constants;
-import com.example.moviefinder.MovieDetailsActivity;
 import com.example.moviefinder.MovieDetailsActivityTabbed;
 import com.google.gson.JsonObject;
 
@@ -83,7 +82,7 @@ public class Utils {
                     Log.e(TAG, "response code" + response.code());
                     //go to new activity, pass jsonobject as string
                     Log.e(TAG, "jsonobject = " + response.body());
-                    Intent intent = new Intent(mContext, MovieDetailsActivity.class);
+                    Intent intent = new Intent(mContext, MovieDetailsActivityTabbed.class);
                     intent.putExtra("JSONObject", response.body().toString());
                     mContext.startActivity(intent);
                 } else {

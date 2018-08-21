@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.moviefinder.Adapters.CastRecyclerViewAdapter;
 import com.example.moviefinder.Adapters.RecyclerViewAdapter;
@@ -33,24 +34,40 @@ public class Cast extends Fragment {
     ProgressBar progressBar;
     JsonObject castJson;
     HashMap<Integer, ArrayList<String>> castHashmap = new HashMap<>();
+    TextView noneFoundTV;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_movie_cast, container, false);
         progressBar = view.findViewById(R.id.cast_progressBar);
+        noneFoundTV = view.findViewById(R.id.cast_nonefound_TV);
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("JSONObject")) {
             String jsonString = bundle.getString("JSONObject");
             JsonParser jsonParser = new JsonParser();
             castJson = (JsonObject) jsonParser.parse(jsonString);
-            getInfo(castJson, view);
+            if (checkIntegrity(castJson)) {
+                getInfo(castJson, view);
+            } else {
+                noneFoundTV.setVisibility(View.VISIBLE);
+            }
         } else {
             progressBar.setVisibility(View.VISIBLE);
         }
 
 
         return view;
+    }
+
+    private boolean checkIntegrity(JsonObject castJson) {
+        JsonArray castArray;
+        castArray = castJson.getAsJsonArray("cast").getAsJsonArray();
+        if (castJson.getAsJsonArray("cast").isJsonNull() || castArray.size() == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
@@ -93,6 +110,8 @@ public class Cast extends Fragment {
             recyclerView.setLayoutManager(layoutManager);
             CastRecyclerViewAdapter castRecyclerViewAdapter = new CastRecyclerViewAdapter(getContext(), castHashmap );
             recyclerView.setAdapter(castRecyclerViewAdapter);
+        } else {
+
         }
 
     }

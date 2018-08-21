@@ -1,5 +1,6 @@
 package com.example.moviefinder.API;
 
+import com.google.api.client.json.Json;
 import com.google.gson.JsonObject;
 
 import retrofit2.Call;
@@ -31,6 +32,12 @@ public interface MovieClient {
             @Query("page") int page,
             @Query("include_adult") boolean allowAdult,
             @Query("api_key") String api_key);
+
+    @GET("now_playing")
+    Call<JsonObject> getNowPlaying(
+            @Query("api_key") String api_key,
+            @Query("region") String region);
+
 
     @GET("popular")
     Call<JsonObject> getPopularMovies(

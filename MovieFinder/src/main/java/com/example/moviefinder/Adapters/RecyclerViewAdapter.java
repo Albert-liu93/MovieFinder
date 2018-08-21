@@ -58,7 +58,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         String imageURL = Constants.movieDB_Image_URL + posterURLs.get(position);
         Picasso.get()
                 .load(imageURL)
-                .placeholder(android.R.drawable.stat_notify_error)
+                .placeholder(R.drawable.ic_photo_grey_24dp)
                 .error(android.R.drawable.stat_notify_error)
                 .into(holder.image, new Callback() {
                     @Override

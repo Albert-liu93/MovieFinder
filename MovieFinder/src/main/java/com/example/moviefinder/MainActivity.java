@@ -3,6 +3,8 @@ package com.example.moviefinder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -18,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.moviefinder.API.MovieClient;
@@ -25,7 +28,11 @@ import com.example.moviefinder.API.RetrofitUtils;
 import com.example.moviefinder.Adapters.RecyclerViewAdapter;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.Database.DatabaseHelper;
+import com.example.moviefinder.Model.Note;
+import com.example.moviefinder.Utils.TypefaceUtil;
 import com.example.moviefinder.Utils.Utils;
+import com.facebook.stetho.Stetho;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -50,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
     private SearchView searchView;
+    private TextView playingNow_TV, upcoming_TV;
     private Context mContext;
     private AdView adView;
 
@@ -58,11 +66,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "fonts/Futura Book font.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
+
+        Stetho.initializeWithDefaults(this);
+
+        DatabaseHelper.getsInstance(mContext);
 
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         drawerLayout = findViewById(R.id.drawer_layout);
+        playingNow_TV = findViewById(R.id.playingNowMovie_TV);
+        upcoming_TV = findViewById(R.id.upcomingMovies_TV);
+
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Oswald-Medium.ttf");
+        playingNow_TV.setTypeface(tf);
+        upcoming_TV.setTypeface(tf);
 
         //admob
         MobileAds.initialize(mContext, "ca-app-pub-3940256099942544~3347511713");
@@ -159,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         MovieClient client = retrofit.create(MovieClient.class);
 
-        Call<JsonObject> call = client.getPopularMovies(Constants.API_KEY, "US");
+        Call<JsonObject> call = client.getNowPlaying(Constants.API_KEY, "US");
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

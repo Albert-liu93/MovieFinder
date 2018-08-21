@@ -50,7 +50,7 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
 
     JsonObject movieJSON = new JsonObject();
     JsonObject creditsJSON = new JsonObject();
-    String TAG = "MovieDetailsActivity";
+    String TAG = "MovieDetailsActivityTabbed";
     TextView title, overview, genres, releaseDate, rating;
     ImageView poster, backdrop;
     RatingBar ratingBar;
@@ -66,9 +66,11 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
         actionBar.setDisplayHomeAsUpEnabled(true);
         poster = findViewById(R.id.movie_IV);
         backdrop = findViewById(R.id.movie_background_poster_IV);
+        backdrop.setAlpha(50);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-
+        title = findViewById(R.id.movie_title);
+        ratingBar = findViewById(R.id.ratingBar);
         Bundle bundle = new Bundle();
         Intent intent = getIntent();
         if (intent.hasExtra("JSONObject")) {
@@ -86,7 +88,7 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
         }
 
 
-//        loadText(movieJSON);
+        loadText(movieJSON);
         String imageURL = "";
         String backdropURL = "";
         if (!movieJSON.get("poster_path").isJsonNull()) {
@@ -126,6 +128,8 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
 
                         }
                     });
+        } else {
+            poster.setImageResource(R.drawable.ic_broken_image_black_24dp);
         }
         MovieInfo movieInfo = new MovieInfo();
         movieInfo.setArguments(bundle);
@@ -165,6 +169,7 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
                     Bundle bundle = new Bundle();
                     switch (item.getItemId()) {
                         case R.id.action_movie_info:
+                            bundle.putInt("movieId", movieId);
                             bundle.putString("JSONObject", JSONString);
                             bundle.putInt("movieId", movieId);
                             selectedFragment = new MovieInfo();
@@ -190,36 +195,36 @@ public class MovieDetailsActivityTabbed extends AppCompatActivity implements Vie
     private void loadText(JsonObject movieJSON) {
         Log.e(TAG, "json " + movieJSON);
         title.append(movieJSON.get("original_title").getAsString());
-        overview.append(movieJSON.get("overview").getAsString());
-        JsonArray jsonArray = movieJSON.getAsJsonArray("genres");
-        Log.e(TAG, "jsonArray" + jsonArray);
-        int size = jsonArray.size();
-        Log.e(TAG, "jsonArray" + size);
-        for (JsonElement element : jsonArray) {
-            JsonObject jsonObject2 = element.getAsJsonObject();
-            genres.append(jsonObject2.get("name").getAsString());
-            genres.append(" ");
-        }
-
-        String releaseDateString = movieJSON.get("release_date").getAsString();
-
-        SimpleDateFormat inputDate = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat outputDate = new SimpleDateFormat("MMMM-dd-yyyy");
-        Date convertedDate = new Date();
-        try {
-            convertedDate = inputDate.parse(releaseDateString);
-        } catch (ParseException e) {
-            Log.e(TAG, "Error" + e);
-        }
-        String releaseDateFormatted = outputDate.format(convertedDate);
-        releaseDate.append(releaseDateFormatted);
+//        overview.append(movieJSON.get("overview").getAsString());
+//        JsonArray jsonArray = movieJSON.getAsJsonArray("genres");
+//        Log.e(TAG, "jsonArray" + jsonArray);
+//        int size = jsonArray.size();
+//        Log.e(TAG, "jsonArray" + size);
+//        for (JsonElement element : jsonArray) {
+//            JsonObject jsonObject2 = element.getAsJsonObject();
+//            genres.append(jsonObject2.get("name").getAsString());
+//            genres.append(" ");
+//        }
+//
+//        String releaseDateString = movieJSON.get("release_date").getAsString();
+//
+//        SimpleDateFormat inputDate = new SimpleDateFormat("yyyy-MM-dd");
+//        SimpleDateFormat outputDate = new SimpleDateFormat("MMMM-dd-yyyy");
+//        Date convertedDate = new Date();
+//        try {
+//            convertedDate = inputDate.parse(releaseDateString);
+//        } catch (ParseException e) {
+//            Log.e(TAG, "Error" + e);
+//        }
+//        String releaseDateFormatted = outputDate.format(convertedDate);
+//        releaseDate.append(releaseDateFormatted);
         ratingBar.setRating((Float.parseFloat(movieJSON.get("vote_average").getAsString()))/2.0F);
 
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.trailer_btn) {
+        if (view.getId() == R.id.action_movie_trailer) {
             Intent intent = new Intent(this, VideoPlayerActivity.class);
             intent.putExtra("video_URL", videoURL);
             startActivity(intent);

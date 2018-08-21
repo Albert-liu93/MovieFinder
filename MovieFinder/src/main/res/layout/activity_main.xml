@@ -17,12 +17,12 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="33dp"
-            android:id="@+id/popularMovie_TV"
-            android:fontFamily="sans-serif-smallcaps"
+            android:layout_height="wrap_content"
+            android:id="@+id/playingNowMovie_TV"
             android:text="popular movies"
             android:textSize="24sp"
             android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
             android:layout_alignParentTop="true"
             />
 
@@ -32,17 +32,19 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="visible"
-            android:layout_below="@+id/popularMovie_TV"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@+id/playingNowMovie_TV"
             />
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="33dp"
+            android:layout_height="wrap_content"
             android:id="@+id/upcomingMovies_TV"
-            android:fontFamily="sans-serif-smallcaps"
             android:text="upcoming movies"
             android:textSize="24sp"
             android:layout_marginTop="5dp"
+            android:layout_margin="5dp"
             android:layout_below="@+id/mainPage_popularRecycleView"
             />
 
@@ -52,6 +54,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="visible"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="5dp"
             android:layout_below="@id/upcomingMovies_TV"
             />
 
