@@ -30,12 +30,23 @@
         android:src="@drawable/ic_moviedb_icon"
         />
 
-    <TextView
+
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:text="@string/movieDB_attribution"
         />
 
+
+    <Button
+        android:id="@+id/privacyPolicyBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="10dp"
+        android:text="Privacy Policy"
+        />
 
 
 

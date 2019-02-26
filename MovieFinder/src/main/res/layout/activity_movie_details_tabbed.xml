@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:id="@+id/movie_background_poster_IV"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             />
         <ImageView
             android:layout_width="wrap_content"
@@ -51,6 +51,19 @@
             android:layout_marginRight="20dp"
             android:theme="@style/Base.Widget.AppCompat.RatingBar."
             style="?attr/ratingBarStyleSmall"
+            />
+
+        <TextView
+            android:id="@+id/runtimeTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textColor="@android:color/white"
+            android:text="Runtime: "
+            android:layout_below="@+id/ratingBar"
+            android:layout_toRightOf="@+id/movie_IV"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             />
 
     </RelativeLayout>

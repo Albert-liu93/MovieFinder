@@ -21,7 +21,12 @@
     <style name="Base.Widget.AppCompat.RatingBar." parent="Theme.AppCompat">
         <item name="colorControlNormal">#fff955</item>
         <item name="colorControlActivated">#fff955</item>
+    </style>
 
+    <style name="MyCardViewStyle" parent="Theme.AppCompat.Light">
+        <item name="cardCornerRadius">2dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPaddingBottom">5dp</item>
     </style>
 
 </resources>

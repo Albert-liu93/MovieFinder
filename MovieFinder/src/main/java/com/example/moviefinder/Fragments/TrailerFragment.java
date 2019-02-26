@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.moviefinder.Constants.Constants;
 import com.example.moviefinder.R;
@@ -21,7 +22,7 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.google.api.client.util.StringUtils;
 
-public class Trailer extends android.support.v4.app.Fragment {
+public class TrailerFragment extends android.support.v4.app.Fragment {
 
     private YouTubePlayer.OnInitializedListener mOnInitializedListener;
     private String videoURL;
@@ -59,7 +60,7 @@ public class Trailer extends android.support.v4.app.Fragment {
 
                 @Override
                 public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
+                    Toast.makeText(myContext, "This video could not be played, please try again later", Toast.LENGTH_LONG).show();
                 }
             });
 

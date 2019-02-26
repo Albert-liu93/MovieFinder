@@ -13,10 +13,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper sInstance;
 
     static final String dbName = "movieFinderDB";
+
     static final String note_table = "Note";
     static final String id_col = "Id";
     static final String parent_col = "Parent";
     static final String text_col = "Text";
+
+    static final String list_table = "List";
+    static final String name_col = "Name";
+    static final String movies_Col = "Movies";
+
 
     private static final int DATABASE_VERSION = 1;
 
@@ -33,12 +39,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(" CREATE TABLE " + note_table + " (" +
+        db.execSQL(" CREATE TABLE IF NOT EXISTS " + note_table + " (" +
                 id_col + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 parent_col + " TEXT NOT NULL, " +
                 text_col + " TEXT NOT NULL);"
         );
-    }
+        db.execSQL(" CREATE TABLE IF NOT EXISTS " + list_table + " (" +
+                id_col + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                name_col + " TEXT NOT NULL, " +
+                movies_Col + " TEXT NOT NULL);"
+        );    }
 
     public boolean insertNote(int parent, String note) {
         SQLiteDatabase db = this.getWritableDatabase();

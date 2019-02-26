@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.Model.Cast;
 import com.example.moviefinder.R;
+import com.example.moviefinder.Utils.Utils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -22,11 +25,11 @@ import java.util.HashMap;
 
 public class CastRecyclerViewAdapter extends RecyclerView.Adapter<CastRecyclerViewAdapter.ViewHolder>{
 
-    HashMap<Integer, ArrayList<String>> cast;
+    ArrayList<Cast> castList;
     Context mContext;
 
-    public CastRecyclerViewAdapter(Context context, HashMap<Integer, ArrayList<String>> castMembers) {
-        this.cast = castMembers;
+    public CastRecyclerViewAdapter(Context context, ArrayList<Cast> castMembers) {
+        this.castList = castMembers;
         mContext = context;
     }
 
@@ -40,40 +43,51 @@ public class CastRecyclerViewAdapter extends RecyclerView.Adapter<CastRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        ArrayList<String> temp = cast.get(position);
-        String name = temp.get(0);
-        String url = temp.get(1);
+        Cast castTemp = castList.get(position);
+        if (castTemp != null) {
+            String name = castTemp.getName();
+            String url = castTemp.getProfilePath();
+            String character = castTemp.getCharacter();
 
-        ImageLoader imageLoader = ImageLoader.getInstance();
+            ImageLoader imageLoader = ImageLoader.getInstance();
 
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(android.R.drawable.stat_notify_error)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .cacheInMemory(true)
-                .build();
-        String imageURL;
-        if (url.isEmpty()) {
-            imageURL = "";
-        } else {
-            imageURL = Constants.movieDB_Image_URL + url;
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .showImageForEmptyUri(android.R.drawable.stat_notify_error)
+                    .imageScaleType(ImageScaleType.EXACTLY)
+                    .cacheInMemory(true)
+                    .build();
+            String imageURL;
+            if (url.isEmpty()) {
+                imageURL = "";
+            } else {
+                imageURL = Constants.movieDB_Image_URL + url;
+            }
+            imageLoader.displayImage(imageURL, holder.image, options);
+            if (Utils.isStringNotNullorBlank(name)){
+                holder.name.setText(name);
+            }
+            if (Utils.isStringNotNullorBlank(character) && Utils.isCharacterNameValid(character)) {
+                holder.character.setText(character);
+            } else {
+                holder.character.setText("");
+            }
         }
-        imageLoader.displayImage(imageURL, holder.image, options);
-        holder.name.setText(name);
     }
 
     @Override
     public int getItemCount() {
-        return cast.size();
+        return castList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView image;
-        TextView name;
+        TextView name, character;
         public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.cast_picture_IV);
             name = itemView.findViewById(R.id.cast_name_TV);
+            character = itemView.findViewById(R.id.cast_character_name);
         }
     }
 

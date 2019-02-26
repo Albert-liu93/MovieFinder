@@ -1,10 +1,22 @@
 package com.example.moviefinder.Model;
 
-public class Note {
+import com.example.moviefinder.Database.AppDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
+@Table(database = AppDatabase.class)
+public class Note extends BaseModel {
+
+
+    @Column
+    @PrimaryKey (autoincrement =  true)
     private int id;
+    @Column
     private int parent;
-    private String note;
+    @Column
+    private String note = "";
 
     public Note() {
     }

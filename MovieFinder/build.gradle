@@ -31,12 +31,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
 }
+
+def dbflow_version = "4.2.4"
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -45,6 +48,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.android.support:multidex:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -57,7 +61,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.android.gms:play-services-ads:15.0.0'
-    compile 'com.github.medyo:android-about-page:1.2.4'
     compile 'com.google.apis:google-api-services-youtube:v3-rev198-1.23.0'
     compile 'com.github.ome450901:SimpleRatingBar:1.4.2'
     compile 'com.facebook.stetho:stetho:1.5.0'
@@ -65,4 +68,8 @@ dependencies {
         transitive = true;
     }
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
+    annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+    implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+    compile 'jp.wasabeef:blurry:2.1.1'
 }

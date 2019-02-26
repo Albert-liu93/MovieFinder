@@ -1,10 +1,12 @@
 package com.example.moviefinder.API;
 
-import com.google.api.client.json.Json;
+import com.example.moviefinder.Model.Movie;
+import com.example.moviefinder.Model.Responses.CastResponse;
+import com.example.moviefinder.Model.Responses.MovieResponse;
 import com.google.gson.JsonObject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -22,9 +24,11 @@ public interface MovieClient {
             @Query("api_key") String api_key);
 
     @GET("{id}")
-    Call<JsonObject> getMovieDetail(
+    Call<Movie> getMovieDetail(
             @Path("id") int id,
-            @Query("api_key") String api_key);
+            @Query("api_key") String api_key,
+            @Query("region") String region,
+            @Query("append_to_response") String release_date);
 
     @GET("movie")
     Call<JsonObject> getSearchQuery(
@@ -34,7 +38,7 @@ public interface MovieClient {
             @Query("api_key") String api_key);
 
     @GET("now_playing")
-    Call<JsonObject> getNowPlaying(
+    Call<MovieResponse> getNowPlaying(
             @Query("api_key") String api_key,
             @Query("region") String region);
 
@@ -46,7 +50,7 @@ public interface MovieClient {
 
 
     @GET("upcoming")
-    Call<JsonObject> getUpcomingmovies(
+    Call<MovieResponse> getUpcomingmovies(
             @Query("api_key") String api_key,
             @Query("region") String region);
 
@@ -57,7 +61,7 @@ public interface MovieClient {
             @Query("language") String language);
 
     @GET("{id}/credits")
-    Call<JsonObject> getCredits(
+    Call<CastResponse> getCredits(
             @Path("id") int id,
             @Query("api_key") String api_key);
 

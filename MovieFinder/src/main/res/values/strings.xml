@@ -8,4 +8,11 @@
         condimentum in lobortis non, imperdiet ut nisl. Nunc pharetra sodales orci non consectetur. Sed quis neque dolor. Nullam id nisi feugiat, ullamcorper magna eget, venenatis nunc. Nunc sit amet justo quis nunc porttitor vulputate.
         Praesent pharetra venenatis erat, ornare fringilla lorem ornare eu. Nulla sed turpis sit amet mauris pharetra molestie.</string>
     <string name="loadingmore"> Fetching more... </string>
+    <string name="retrieve_info_error_title">Could not retrieve info</string>
+
+
+    <!--Error messages-->
+    <string name="cast_error_title">Error</string>
+    <string name="cast_error_message">Unfortunately cast info could not be retrieved, please try again later.</string>
+
 </resources>

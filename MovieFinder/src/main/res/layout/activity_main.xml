@@ -8,74 +8,67 @@
     android:fitsSystemWindows="true"
     tools:context="com.example.moviefinder.MainActivity"
     >
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/mainpage_LV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <TextView
+        <RelativeLayout
+            android:id="@+id/mainpage_LV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/playingNowMovie_TV"
-            android:text="popular movies"
-            android:textSize="24sp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_alignParentTop="true"
-            />
+            android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mainPage_popularRecycleView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            android:layout_marginTop="2dp"
-            android:layout_marginLeft="5dp"
-            android:layout_below="@+id/playingNowMovie_TV"
-            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/playingNowMovie_TV"
+                android:text="Popular movies"
+                android:textSize="24sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_alignParentTop="true"
+                android:visibility="gone"
+                />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/upcomingMovies_TV"
-            android:text="upcoming movies"
-            android:textSize="24sp"
-            android:layout_marginTop="5dp"
-            android:layout_margin="5dp"
-            android:layout_below="@+id/mainPage_popularRecycleView"
-            />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/mainPage_popularRecycleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@+id/playingNowMovie_TV"
+                />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mainPage_upcomingRecycleView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            android:layout_marginTop="2dp"
-            android:layout_marginLeft="5dp"
-            android:layout_below="@id/upcomingMovies_TV"
-            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/upcomingMovies_TV"
+                android:text="Upcoming movies"
+                android:textSize="24sp"
+                android:layout_marginTop="5dp"
+                android:layout_margin="10dp"
+                android:layout_below="@+id/mainPage_popularRecycleView"
+                android:visibility="gone"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/mainPage_upcomingRecycleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@id/upcomingMovies_TV"
+                />
+        </RelativeLayout>
+    </ScrollView>
 
 
-
-
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-            >
-        </com.google.android.gms.ads.AdView>
-
-    </RelativeLayout>
-
+    <include layout="@layout/progress_overlay"></include>
 
 
 

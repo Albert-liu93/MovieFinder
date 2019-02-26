@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -12,41 +12,30 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.example.moviefinder.API.MovieClient;
 import com.example.moviefinder.API.RetrofitUtils;
 import com.example.moviefinder.Adapters.RecyclerViewAdapter;
-import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Constants.Constants;
-import com.example.moviefinder.Database.DatabaseHelper;
-import com.example.moviefinder.Model.Note;
+import com.example.moviefinder.Model.Movie;
+import com.example.moviefinder.Model.Responses.MovieResponse;
 import com.example.moviefinder.Utils.TypefaceUtil;
 import com.example.moviefinder.Utils.Utils;
-import com.facebook.stetho.Stetho;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SearchView searchView;
     private TextView playingNow_TV, upcoming_TV;
     private Context mContext;
-    private AdView adView;
+    private View progressOverlay;
+
 
 
     @Override
@@ -70,16 +60,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mContext = this;
         TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "fonts/Futura Book font.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
 
-        //Stetho
-        Stetho.initializeWithDefaults(this);
-        //Database Creation
-        DatabaseHelper.getsInstance(mContext);
-        //Crashlytics
-        Fabric.with(this, new Crashlytics());
-
         setContentView(R.layout.activity_main);
+
+        //admob
+//        MobileAds.initialize(mContext, "ca-app-pub-3940256099942544~3347511713");
+//        AdRequest adRequest = new AdRequest.Builder().addTestDevice("74D028AA77CD10324FBC73179CDE0E8F").build();
+//        adView.loadAd(adRequest);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
         drawerLayout = findViewById(R.id.drawer_layout);
         playingNow_TV = findViewById(R.id.playingNowMovie_TV);
         upcoming_TV = findViewById(R.id.upcomingMovies_TV);
@@ -88,11 +78,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         playingNow_TV.setTypeface(tf);
         upcoming_TV.setTypeface(tf);
 
-        //admob
-        MobileAds.initialize(mContext, "ca-app-pub-3940256099942544~3347511713");
-        adView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("74D028AA77CD10324FBC73179CDE0E8F").build();
-        adView.loadAd(adRequest);
+        progressOverlay = findViewById(R.id.progress_overlay);
+
 
         //nav drawer
         mToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.menu_open, R.string.menu_close);
@@ -106,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageLoader.getInstance().init(config);
 
         if (Utils.checkInternetStatus(mContext)) {
+            Utils.animateView(progressOverlay, View.VISIBLE, 0.4f, 200);
             loadPopularImages();
             loadUpcomingImages();
         } else {
@@ -155,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        return super.onCreateOptionsMenu(menu);    }
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -180,30 +169,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadPopularImages() {
 
         Retrofit retrofit = RetrofitUtils.getRetrofitClient("https://api.themoviedb.org/3/movie/");
-
         MovieClient client = retrofit.create(MovieClient.class);
-
-        Call<JsonObject> call = client.getNowPlaying(Constants.API_KEY, "US");
-        call.enqueue(new Callback<JsonObject>() {
+        Call<MovieResponse> call = client.getNowPlaying(Constants.API_KEY, "US");
+        call.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 if (response.isSuccessful()) {
+
                     Log.e(TAG, "jsonobject = " + response.body());
-                    displayData(response.body(), "popular");
+                    ArrayList<Movie> movieList = (ArrayList) response.body().getResults();
+                    displayData(movieList, "popular");
                 } else {
                     Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "response unsuccessful" + response.code());
                 }
-
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
                 Toast.makeText(mContext, "Failure!", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "failed");
             }
         });
-
     }
 
     private void loadUpcomingImages() {
@@ -212,75 +199,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MovieClient client = retrofit.create(MovieClient.class);
 
 
-        Call<JsonObject> call = client.getUpcomingmovies(Constants.API_KEY, "US");
-        call.enqueue(new Callback<JsonObject>() {
+        Call<MovieResponse> call = client.getUpcomingmovies(Constants.API_KEY, "US");
+        call.enqueue(new Callback<MovieResponse>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 if (response.isSuccessful()) {
-                    Log.e(TAG, "jsonobject = " + response.body());
-                    displayData(response.body(), "upcoming");
+                    Log.e(TAG, "movie response = " + response.body());
+                    ArrayList<Movie> movieList = (ArrayList) response.body().getResults();
+                    displayData(movieList, "upcoming");
                 } else {
                     Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "response unsuccessful" + response.code());
                 }
-
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
                 Toast.makeText(mContext, "Failure!", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "failed");
             }
         });
     }
 
-    private void displayData(JsonObject responseResult, String type) {
-        int count = responseResult.get("total_results").getAsInt();
-        Log.e(TAG, "total results = " + count);
-        JsonArray resultsArray = responseResult.getAsJsonArray("results");
-
-        ArrayList<String> posterBackDrop = new ArrayList<>();
-        final HashMap<Integer, Integer> idHashMap = new HashMap<>();
-        int MAX_RESULT = 10;
-        int key = 1;
-        for (JsonElement element : resultsArray) {
-            if (MAX_RESULT == 0) {
-                break;
-            } else {
-                JsonObject object = element.getAsJsonObject();
-                Log.e(TAG, "titles =" + object.get("title").getAsString());
-                idHashMap.put(key, object.get("id").getAsInt());
-                if (!object.get("poster_path").isJsonNull()) {
-                    posterBackDrop.add(object.get("poster_path").getAsString());
-                } else {
-                    posterBackDrop.add("");
-                }
-                key++;
-            }
-            MAX_RESULT--;
-        }
+    private void displayData(ArrayList<Movie> movies, String type) {
         if (type.equals("popular")) {
-            initPopularRecyclerView(posterBackDrop, idHashMap);
+            initPopularRecyclerView(movies);
         } else if (type.equals("upcoming")) {
-            initUpcomingRecyclerView(posterBackDrop, idHashMap);
+            initUpcomingRecyclerView(movies);
         }
     }
 
-    private void initPopularRecyclerView(ArrayList<String> posterBackDrop, HashMap<Integer, Integer> idHashMap) {
+    private void initPopularRecyclerView(ArrayList<Movie> movies) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.mainPage_popularRecycleView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, posterBackDrop, idHashMap);
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, movies);
         recyclerView.setAdapter(recyclerViewAdapter);
+        Utils.animateView(progressOverlay, View.GONE, 0, 200);
+        showText();
     }
 
-    private void initUpcomingRecyclerView(ArrayList<String> posterBackDrop, HashMap<Integer, Integer> idHashMap) {
+    private void initUpcomingRecyclerView(ArrayList<Movie> movies) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.mainPage_upcomingRecycleView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, posterBackDrop, idHashMap);
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, movies);
         recyclerView.setAdapter(recyclerViewAdapter);
+        Utils.animateView(progressOverlay, View.GONE, 0, 200);
+        showText();
+    }
+
+    private void showText() {
+        playingNow_TV.setVisibility(View.VISIBLE);
+        upcoming_TV.setVisibility(View.VISIBLE);
     }
 }

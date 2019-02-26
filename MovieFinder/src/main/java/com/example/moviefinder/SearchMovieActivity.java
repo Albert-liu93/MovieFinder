@@ -1,6 +1,9 @@
 package com.example.moviefinder;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,9 +31,11 @@ import android.widget.Toast;
 
 import com.example.moviefinder.API.MovieClient;
 import com.example.moviefinder.Adapters.EndlessScrollListener;
+import com.example.moviefinder.Adapters.SearchAdapter;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Callbacks.SuccessCallback;
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.Utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -51,7 +57,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.moviefinder.Utils.Utils.getMovieDetails;
 
 
 /**
@@ -61,7 +66,7 @@ import static com.example.moviefinder.Utils.Utils.getMovieDetails;
 public class SearchMovieActivity extends AppCompatActivity {
 
 
-    ListView searchListView;
+    RecyclerView searchRecyclerView;
     TextView noResultTV;
     RelativeLayout progressLayout;
     Context mContext;
@@ -70,7 +75,7 @@ public class SearchMovieActivity extends AppCompatActivity {
     ArrayList<String> dates = new ArrayList<>();
     ArrayList<String> posterBackDrop = new ArrayList<>();
     HashMap<Integer, Integer> idHashMap = new HashMap<>();
-    ArrayAdapter arrayAdapter;
+    SearchAdapter arrayAdapter;
     String query = "";
     int key = 1;
     int page = 1;
@@ -81,7 +86,7 @@ public class SearchMovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_movie);
         mContext = this;
-        searchListView = findViewById(R.id.movieSearch_lv);
+        searchRecyclerView = findViewById(R.id.movieSearch_RV);
         noResultTV = findViewById(R.id.search_no_results);
         progressLayout = findViewById(R.id.loadingMore_progressBar);
         ActionBar actionBar = getSupportActionBar();
@@ -194,12 +199,12 @@ public class SearchMovieActivity extends AppCompatActivity {
 
 
     private void displayData(JsonObject jsonObject) {
-        searchListView.setVisibility(View.VISIBLE);
+        searchRecyclerView.setVisibility(View.VISIBLE);
         noResultTV.setVisibility(View.INVISIBLE);
         JsonObject result = jsonObject;
         int count = result.get("total_results").getAsInt();
         if (count == 0 || result.isJsonNull()) {
-            searchListView.setVisibility(View.INVISIBLE);
+            searchRecyclerView.setVisibility(View.INVISIBLE);
             noResultTV.setVisibility(View.VISIBLE);
         } else {
             Log.e(TAG, "total results = " + count);
@@ -226,46 +231,68 @@ public class SearchMovieActivity extends AppCompatActivity {
             }
             Log.e("page = ", " =" + page);
             if (arrayAdapter == null) {
-                arrayAdapter = new MovieAdapter(this, titles, posterBackDrop,dates);
+                arrayAdapter = new SearchAdapter(this, titles, posterBackDrop,dates);
             }
             if (page == 1) {
-                searchListView.setAdapter(arrayAdapter);
-                searchListView.setOnScrollListener(new EndlessScrollListener() {
-                    @Override
-                    public boolean onLoadMore(int loadPage, int totalItemsCount) {
-                        page = loadPage;
-                        searchMovie(query, loadPage);
-                        return true;
-                    }
-                });
+                searchRecyclerView.setAdapter(arrayAdapter);
+//                searchRecyclerView.setOnScrollListener(new EndlessScrollListener() {
+//                    @Override
+//                    public boolean onLoadMore(int loadPage, int totalItemsCount) {
+//                        page = loadPage;
+//                        searchMovie(query, loadPage);
+//                        return true;
+//                    }
+//                });
             } else {
                 arrayAdapter.notifyDataSetChanged();
                 progressLayout.setVisibility(View.GONE);
             }
 
-            searchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //get value from key of id
-                    Log.e(TAG, "id = " + id);
-                    int movieId = idHashMap.get((int)id+1);
-                    Log.e(TAG, "movideID clicked" + movieId);
-                    ImageView imageView = view.findViewById(R.id.movie_search_IV);
-                    ViewCompat.setTransitionName(imageView, String.valueOf(movieId));
-                    getMovieDetails(movieId, mContext, view, imageView, new SuccessCallback() {
-                        @Override
-                        public void success() {
-
-                        }
-
-                        @Override
-                        public void error() {
-
-                        }
-                    });
-                }
-            });
+//            searchRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    final ProgressDialog progressDialog = new ProgressDialog(mContext);
+//                    progressDialog.setIndeterminate(true);
+//                    progressDialog.setCancelable(false);
+//                    progressDialog.setMessage("Gathering Information");
+//                    progressDialog.show();
+//                    //get value from key of id
+//                    Log.e(TAG, "id = " + id);
+//                    int movieId = idHashMap.get((int)id+1);
+//                    Log.e(TAG, "movideID clicked" + movieId);
+//                    ImageView imageView = view.findViewById(R.id.movie_search_IV);
+//                    ViewCompat.setTransitionName(imageView, String.valueOf(movieId));
+//                    getMovieDetails(movieId, mContext, view, imageView, new SuccessCallback() {
+//                        @Override
+//                        public void success() {
+//                            if (progressDialog.isShowing()) {
+//                                progressDialog.dismiss();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void error() {
+//                            if (progressDialog.isShowing()) {
+//                                progressDialog.dismiss();
+//                            }
+//                            showError(mContext);
+//                        }
+//                    });
+//                }
+//            });
         }
+    }
+
+    private void showError(Context context) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.retrieve_info_error_title);
+        builder.setMessage("Unfortunately, the info  for this movie could not be retrieved, please try again later.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
     }
 
     private void clearData() {
@@ -273,55 +300,6 @@ public class SearchMovieActivity extends AppCompatActivity {
         dates.clear();
         posterBackDrop.clear();
         idHashMap.clear();
-    }
-
-
-
-    class MovieAdapter extends ArrayAdapter<String> {
-
-        ArrayList<String> titles;
-        ArrayList<String> posterBackDrop;
-        ArrayList<String> dates;
-
-        public MovieAdapter(@NonNull Context context, ArrayList<String> titles, ArrayList<String> backdrop, ArrayList<String> dates) {
-            super(context, R.layout.movie_list_row, titles);
-            this.titles = titles;
-            this.posterBackDrop = backdrop;
-            this.dates = dates;
-        }
-
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            LayoutInflater movieInflater = LayoutInflater.from(getContext());
-            View customView = movieInflater.inflate(R.layout.movie_list_row, parent, false);
-            TextView title = customView.findViewById(R.id.movie_search_TV);
-            TextView year = customView.findViewById(R.id.movie_search_date_TV);
-            ImageView poster = customView.findViewById(R.id.movie_search_IV);
-            final ProgressBar progressBar = customView.findViewById(R.id.movieSearch_IV_ProgressBar);
-
-            title.setText(titles.get(position));
-            year.setText("(" + dates.get(position) + ")");
-
-            String imageURL = Constants.movieDB_Image_URL + posterBackDrop.get(position);
-
-            Picasso.get()
-                    .load(imageURL)
-                    .error(R.drawable.ic_photo_grey_24dp)
-                    .into(poster, new com.squareup.picasso.Callback() {
-                        @Override
-                        public void onSuccess() {
-                            progressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    });
-            return customView;
-        }
     }
 
 }
