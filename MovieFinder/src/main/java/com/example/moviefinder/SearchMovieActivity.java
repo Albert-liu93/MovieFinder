@@ -5,12 +5,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SearchRecentSuggestionsProvider;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +38,8 @@ import com.example.moviefinder.Adapters.SearchAdapter;
 import com.example.moviefinder.Callbacks.OnTaskCompleted;
 import com.example.moviefinder.Callbacks.SuccessCallback;
 import com.example.moviefinder.Constants.Constants;
+import com.example.moviefinder.Model.Movie;
+import com.example.moviefinder.Model.Responses.SearchResponse;
 import com.example.moviefinder.Utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,6 +53,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -67,6 +73,7 @@ public class SearchMovieActivity extends AppCompatActivity {
 
 
     RecyclerView searchRecyclerView;
+    private EndlessScrollListener endlessScrollListener;
     TextView noResultTV;
     RelativeLayout progressLayout;
     Context mContext;
@@ -79,6 +86,11 @@ public class SearchMovieActivity extends AppCompatActivity {
     String query = "";
     int key = 1;
     int page = 1;
+    boolean isLoading;
+    private int pastVisibleItem, visibleItemCount, totalItemCount, previous_total = 0;
+    private int view_threshold = 0;
+    LinearLayoutManager linearLayoutManager;
+
 
 
     @Override
@@ -87,6 +99,12 @@ public class SearchMovieActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_movie);
         mContext = this;
         searchRecyclerView = findViewById(R.id.movieSearch_RV);
+        linearLayoutManager = new LinearLayoutManager(this);
+        searchRecyclerView.setLayoutManager(linearLayoutManager);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(searchRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        searchRecyclerView.addItemDecoration(dividerItemDecoration);
         noResultTV = findViewById(R.id.search_no_results);
         progressLayout = findViewById(R.id.loadingMore_progressBar);
         ActionBar actionBar = getSupportActionBar();
@@ -174,14 +192,15 @@ public class SearchMovieActivity extends AppCompatActivity {
         Retrofit retrofit = builder.build();
         MovieClient client = retrofit.create(MovieClient.class);
 
-        Call<JsonObject> call = client.getSearchQuery(query, page, false, Constants.API_KEY);
+        Call<SearchResponse> call = client.getSearchQuery(query, page, false, Constants.API_KEY);
 
-        call.enqueue(new Callback<JsonObject>() {
+        call.enqueue(new Callback<SearchResponse>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                 if (response.isSuccessful()) {
                     Log.e(TAG, "jsonobject = " + response.body());
-                    displayData(response.body());
+                    List<Movie> movieList = response.body().getResults();
+                    displayData(movieList);
                 } else {
                     Toast.makeText(mContext, "Unsuccessful response!", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "response unsuccessful");
@@ -189,49 +208,26 @@ public class SearchMovieActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(Call<SearchResponse> call, Throwable throwable) {
                 Toast.makeText(mContext, "Failure!", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "failed");
-
             }
         });
     }
 
 
-    private void displayData(JsonObject jsonObject) {
+    private void displayData(List<Movie> movieList) {
         searchRecyclerView.setVisibility(View.VISIBLE);
         noResultTV.setVisibility(View.INVISIBLE);
-        JsonObject result = jsonObject;
-        int count = result.get("total_results").getAsInt();
-        if (count == 0 || result.isJsonNull()) {
+
+        if (movieList == null || movieList.size() == 0) {
             searchRecyclerView.setVisibility(View.INVISIBLE);
             noResultTV.setVisibility(View.VISIBLE);
         } else {
-            Log.e(TAG, "total results = " + count);
-            JsonArray resultsArray = result.getAsJsonArray("results");
-            for (JsonElement element : resultsArray) {
-                JsonObject object = element.getAsJsonObject();
-                titles.add(object.get("title").getAsString());
-                Log.e(TAG, "titles =" + object.get("title").getAsString());
-                idHashMap.put(key, object.get("id").getAsInt());
-                if (!object.get("poster_path").isJsonNull()) {
-                    posterBackDrop.add(object.get("poster_path").getAsString());
-                } else {
-                    posterBackDrop.add("");
-                }
-                if (!object.get("release_date").isJsonNull()) {
-                    String date = object.get("release_date").getAsString();
-                    if (!date.isEmpty() || date.length() > 4) {
-                        dates.add(date.substring(0,4));
-                    } else {
-                        dates.add("N/A");
-                    }
-                }
-                key++;
-            }
+            Log.e(TAG, "total results = " + movieList.size());
             Log.e("page = ", " =" + page);
             if (arrayAdapter == null) {
-                arrayAdapter = new SearchAdapter(this, titles, posterBackDrop,dates);
+                arrayAdapter = new SearchAdapter(this, movieList);
             }
             if (page == 1) {
                 searchRecyclerView.setAdapter(arrayAdapter);
@@ -243,7 +239,44 @@ public class SearchMovieActivity extends AppCompatActivity {
 //                        return true;
 //                    }
 //                });
+                searchRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+
+                        int visibleItemCount = linearLayoutManager.getChildCount();
+                        int totalItemCount = linearLayoutManager.getItemCount();
+                        int pastVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+
+                        Log.d("scroll", " values " + " isloading" + isLoading );
+                        Log.d("scroll", " values " + " pastvisibleitem" + pastVisibleItem );
+                        Log.d("scroll", " values " + " visibleitemcount" + visibleItemCount );
+                        Log.d("scroll", " values " + " totalitemcount  " + totalItemCount );
+                        Log.d("scroll", " values " + " previoustotal" + previous_total );
+                        Log.d("scroll", " values " + " viewthreshold" + view_threshold );
+
+                        /**
+                         * Scrollviewlistener when user scrolls initial check sets @previous_total value to total items in adapter
+                         * if the user scrolls the the view where the last item is on the page (totalitemcount - visibleitemcount)
+                         * then initiate pagination
+                         */
+                        if (dy > 0) {
+                            if (isLoading) {
+                                if (totalItemCount > previous_total) {
+                                    isLoading = false;
+                                    previous_total = totalItemCount;
+                                }
+                            }
+                            if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItem + view_threshold)) {
+                                page++;
+                                searchMovie(query, page);
+                                isLoading = true;
+                            }
+                        }
+                    }
+                });
             } else {
+                arrayAdapter.addItems(movieList);
                 arrayAdapter.notifyDataSetChanged();
                 progressLayout.setVisibility(View.GONE);
             }
@@ -301,5 +334,6 @@ public class SearchMovieActivity extends AppCompatActivity {
         posterBackDrop.clear();
         idHashMap.clear();
     }
+
 
 }

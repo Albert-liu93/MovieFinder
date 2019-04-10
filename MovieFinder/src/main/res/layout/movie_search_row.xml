@@ -7,36 +7,33 @@
     <RelativeLayout
         android:id="@+id/movie_search_row_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:id="@+id/imageview_RL"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            >
+            android:layout_marginBottom="5dp">
+
             <ImageView
                 android:id="@+id/movie_search_IV"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                />
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
 
             <ProgressBar
                 android:id="@+id/movieSearch_IV_ProgressBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="visible"
-                />
+                android:visibility="visible" />
         </RelativeLayout>
 
 
@@ -45,8 +42,8 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_alignTop="@+id/imageview_RL"
-            android:layout_marginLeft="32dp"
             android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
             android:layout_marginTop="21dp"
             android:layout_toEndOf="@+id/imageview_RL"
             android:layout_toRightOf="@+id/imageview_RL"
@@ -57,11 +54,11 @@
             android:id="@+id/movie_search_date_TV"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:text="TextView"
+            android:layout_below="@+id/movie_search_TV"
             android:layout_alignStart="@+id/movie_search_TV"
             android:layout_alignLeft="@+id/movie_search_TV"
-            android:layout_below="@+id/movie_search_TV"
             android:gravity="center"
+            android:text="TextView"
 
             />
     </RelativeLayout>

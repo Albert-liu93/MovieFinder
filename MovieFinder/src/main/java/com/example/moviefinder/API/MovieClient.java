@@ -3,6 +3,7 @@ package com.example.moviefinder.API;
 import com.example.moviefinder.Model.Movie;
 import com.example.moviefinder.Model.Responses.CastResponse;
 import com.example.moviefinder.Model.Responses.MovieResponse;
+import com.example.moviefinder.Model.Responses.SearchResponse;
 import com.google.gson.JsonObject;
 
 import okhttp3.ResponseBody;
@@ -31,7 +32,7 @@ public interface MovieClient {
             @Query("append_to_response") String release_date);
 
     @GET("movie")
-    Call<JsonObject> getSearchQuery(
+    Call<SearchResponse> getSearchQuery(
             @Query("query") String text,
             @Query("page") int page,
             @Query("include_adult") boolean allowAdult,
