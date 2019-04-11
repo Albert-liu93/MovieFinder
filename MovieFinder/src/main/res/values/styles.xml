@@ -26,8 +26,15 @@
     <style name="MyCardViewStyle" parent="Theme.AppCompat.Light">
         <item name="cardCornerRadius">2dp</item>
         <item name="cardElevation">2dp</item>
-        <item name="contentPaddingBottom">5dp</item>
         <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="SearchMyCardViewStyle" parent="Theme.AppCompat.Light">
+        <item name="cardCornerRadius">10dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
     </style>
 
 </resources>

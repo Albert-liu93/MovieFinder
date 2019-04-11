@@ -102,9 +102,6 @@ public class SearchMovieActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
         searchRecyclerView.setLayoutManager(linearLayoutManager);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(searchRecyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        searchRecyclerView.addItemDecoration(dividerItemDecoration);
         noResultTV = findViewById(R.id.search_no_results);
         progressLayout = findViewById(R.id.loadingMore_progressBar);
         ActionBar actionBar = getSupportActionBar();

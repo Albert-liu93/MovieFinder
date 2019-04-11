@@ -1,7 +1,9 @@
 package com.example.moviefinder.Fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -42,6 +45,7 @@ public class MovieInfoFragment extends Fragment implements View.OnClickListener 
     Movie currentMovie;
     Context mContext;
     ImageView noteBtn;
+    Dialog noteDialog;
     int movieId;
 
     @Nullable
@@ -49,6 +53,7 @@ public class MovieInfoFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_movie_info_fragment, container, false);
         getArguments(this.getArguments());
+        noteDialog = new Dialog(mContext);
         return view;
     }
 
@@ -87,19 +92,31 @@ public class MovieInfoFragment extends Fragment implements View.OnClickListener 
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.note_IB:
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                final EditText editText = new EditText(getContext());
+
+                noteDialog.setContentView(R.layout.note_cardview);
+                ImageView closeImageView = noteDialog.findViewById(R.id.note_dialog_close_IV);
+                Button saveBtn = noteDialog.findViewById(R.id.note_dialog_save_btn);
+                final EditText editText = noteDialog.findViewById(R.id.note_dialog_ET);
+                noteDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
                 final Note note = DatabaseQueryHelper.findNoteForParentMovie(movieId);
                 if (note != null) {
                     editText.setText(note.getNote());
                 }
-                builder.setTitle("Enter note about this movie");
-                builder.setView(editText);
-                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                closeImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(View view) {
+                        if (noteDialog.isShowing()) {
+                            noteDialog.dismiss();
+                        }
+                    }
+                });
+
+                saveBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                         String noteText = editText.getText().toString();
-                        //save note to database
                         if (note != null) {
                             note.setNote(noteText);
                             note.save();
@@ -111,21 +128,19 @@ public class MovieInfoFragment extends Fragment implements View.OnClickListener 
                             newNote.save();
                             loadNote(newNote);
                         }
+                        if (noteDialog.isShowing()) {
+                            noteDialog.dismiss();
+                        }
                     }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
+                noteDialog.show();
         }
     }
 
     private void getArguments(Bundle bundle) {
         if (bundle.containsKey("movie")) {
             currentMovie = (Movie) bundle.getSerializable("movie");
+            movieId = currentMovie.getId();
         } else {
             //Error
         }

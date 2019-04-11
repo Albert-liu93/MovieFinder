@@ -46,9 +46,10 @@
         android:id="@+id/loadingMore_progressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_gravity="bottom"
         layout="@layout/progress_layout"
-        android:visibility="gone">
+        android:visibility="gone"
+        >
 
     </include>
 
